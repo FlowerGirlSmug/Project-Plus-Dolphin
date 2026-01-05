@@ -20,9 +20,9 @@
 #elif defined(__APPLE__)
 #define NORMAL_USER_DIR "Library/Application Support/Dolphin"
 #elif defined(ANDROID)
-#define NORMAL_USER_DIR "/sdcard/project-plus-dolphin"
+#define NORMAL_USER_DIR "/sdcard/project-plus-dolphin-revy"
 #else
-#define NORMAL_USER_DIR "project-plus-dolphin"
+#define NORMAL_USER_DIR "project-plus-dolphin-revy"
 #endif
 
 // The portable user directory
@@ -102,7 +102,7 @@
 #define SHADERCACHE_LEGACY_DIR "ShaderCache"
 
 // The theme directory used by default
-#define DEFAULT_THEME_DIR "Clean Emerald"
+#define DEFAULT_THEME_DIR "Clean Purple"
 
 // Filenames
 // Files in the directory returned by GetUserPath(D_CONFIG_IDX)
