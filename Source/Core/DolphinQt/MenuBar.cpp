@@ -646,14 +646,14 @@ void MenuBar::AddHelpMenu()
 
   QAction* website = help_menu->addAction(tr("&Website"));
   connect(website, &QAction::triggered, this,
-          [] { QDesktopServices::openUrl(QUrl(QStringLiteral("https://projectplusgame.com/"))); });
-  QAction* documentation = help_menu->addAction(tr("Project+ Discord"));
+          [] { QDesktopServices::openUrl(QUrl(QStringLiteral("https://bsky.app/profile/floweriris.bsky.social/"))); });
+  QAction* documentation = help_menu->addAction(tr("P+ Dolphin Wiki"));
   connect(documentation, &QAction::triggered, this, [] {
-    QDesktopServices::openUrl(QUrl(QStringLiteral("https://discord.gg/vdssRDg")));
+    QDesktopServices::openUrl(QUrl(QStringLiteral("https://github.com/FlowerGirlSmug/Project-Plus-Dolphin/wiki")));
   });
   QAction* github = help_menu->addAction(tr("&GitHub Repository"));
   connect(github, &QAction::triggered, this, [] {
-    QDesktopServices::openUrl(QUrl(QStringLiteral("https://github.com/Project-Plus-Development-Team/Project-Plus-Dolphin")));
+    QDesktopServices::openUrl(QUrl(QStringLiteral("https://github.com/FlowerGirlSmug/Project-Plus-Dolphin")));
   });
 
 #ifndef __APPLE__

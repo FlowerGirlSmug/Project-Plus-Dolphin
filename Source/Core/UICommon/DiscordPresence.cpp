@@ -107,12 +107,12 @@ std::string ArtworkForGameId()
 
   if (SConfig::GetInstance().GetGameTDBID() == "RSBE01" || "ID-Project+ Netplay Launcher")
   {
-    static constexpr char cover_url[] = "https://art.gametdb.com/wii/coverB/US/RSBEPL.png";
+    static constexpr char cover_url[] = "https://i.imgur.com/bAnB8FJ.png";
     return fmt::format(cover_url, region_code, SConfig::GetInstance().GetGameTDBID());
   }
   else
   {
-    static constexpr char cover_url[] = "https://discord.dolphin-emu.org/cover-art/{}/{}.png";
+    static constexpr char cover_url[] = "https://i.imgur.com/bAnB8FJ.png";
     return fmt::format(cover_url, region_code, SConfig::GetInstance().GetGameTDBID());
   }
 }
@@ -226,13 +226,13 @@ void UpdateDiscordPresence(int party_size, SecretType type, const std::string& s
   DiscordRichPresence discord_presence = {};
   if (game_artwork.empty())
   {
-    discord_presence.largeImageKey = "https://art.gametdb.com/wii/coverB/US/RSBEPL.png";
-    discord_presence.largeImageText = "Project+";
+    discord_presence.largeImageKey = "https://i.imgur.com/bAnB8FJ.png";
+    discord_presence.largeImageText = "Colorado Project+";
   }
   else if (SConfig::GetInstance().GetGameID() == "RSBE01" || "ID-Project+ Netplay Launcher")
   {
-    discord_presence.largeImageKey = "https://art.gametdb.com/wii/coverB/US/RSBEPL.png";
-    discord_presence.largeImageText = "Project+";
+    discord_presence.largeImageKey = "https://i.imgur.com/bAnB8FJ.png";
+    discord_presence.largeImageText = "Colorado Project+";
     discord_presence.smallImageKey = "dolphin_logo";
     discord_presence.smallImageText = "Dolphin is an emulator for the GameCube and the Wii.";
   }

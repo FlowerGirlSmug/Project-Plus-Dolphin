@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
-Icon=project-plus-dolphin
-Exec=project-plus-dolphin
+Icon=project-plus-dolphin-colorado
+Exec=project-plus-dolphin-colorado
 Terminal=false
 Type=Application
 Categories=Game;Emulator;
