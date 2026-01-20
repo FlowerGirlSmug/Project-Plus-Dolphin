@@ -26,11 +26,11 @@ cp -r ./Source/Core/DolphinQt ./AppDir/usr/Source/Core
 rm -rf ./AppDir/usr/Source/Core/DolphinQt/CMakeFiles
 rm -rf ./AppDir/usr/Source/Core/DolphinQt/project-plus-dolphin-colorado_autogen
 rm ./AppDir/usr/Source/Core/DolphinQt/cmake_install.cmake
-rm ./AppDir/usr/bin/project-plus-dolphin-nogui-colorado
+rm ./AppDir/usr/bin/project-plus-dolphin-colorado-nogui
 rm ./AppDir/usr/bin/dolphin-tool
 mv ./AppDir/usr/share/project-plus-dolphin-colorado/sys ./AppDir/usr/bin/Sys
 rm -rf ./AppDir/usr/share/project-plus-dolphin-colorado
-sed -i 's/env QT_QPA_PLATFORM=xcb project-plus-dolphin/project-plus-dolphin-colorado/g' ./AppDir/usr/share/applications/project-plus-dolphin-colorado.desktop
+sed -i 's/env QT_QPA_PLATFORM=xcb project-plus-dolphin-colorado/project-plus-dolphin-colorado/g' ./AppDir/usr/share/applications/project-plus-dolphin-colorado.desktop
 
 # Prepare Tools for building the AppImage
 wget -N https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${ARCH}.AppImage
