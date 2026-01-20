@@ -3,7 +3,7 @@ branch: Colorado
 runtime: org.kde.Platform
 runtime-version: 6.6
 sdk: org.kde.Sdk
-command: project-plus-dolphin-wrapper-colorado.sh
+command: project-plus-dolphin-colorado-wrapper.sh
 rename-desktop-file: project-plus-dolphin-colorado.desktop
 rename-icon: project-plus-dolphin-colorado
 finish-args:
@@ -136,7 +136,7 @@ modules:
 
       # Script that is ran everytime the final Flatpak starts
       - type: file
-        path: project-plus-dolphin-wrapper-colorado.sh
+        path: project-plus-dolphin-colorado-wrapper.sh
         
       # Metadata file for Flatpak repos
       - type: file
