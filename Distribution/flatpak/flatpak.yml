@@ -169,4 +169,4 @@ modules:
       #- mv Launcher ${FLATPAK_DEST}/share/project-plus-dolphin-sgpm/sys/Wii/                                                                            # Move Launcher directory to correct location
       #- mkdir -p ${FLATPAK_DEST}/share/project-plus-dolphin-sgpm/sys/Load/Textures                                                                      # Make directory for HD textures
       #- mv "ModPack/Full Quality HD Textures" ${FLATPAK_DEST}/share/project-plus-dolphin-sgpm/sys/Load/Textures/RSBE01/                              	  # Move HD Textures from ModPack to correct location
-      - install -Dm644 org.projectplusgame.project-plus-dolphin.metainfo.xml -t ${FLATPAK_DEST}/share/metainfo/                                    # Install metainfo file
+      - install -Dm644 org.projectplusgame.project-plus-dolphin-sgpm.metainfo.xml -t ${FLATPAK_DEST}/share/metainfo/                                    # Install metainfo file
