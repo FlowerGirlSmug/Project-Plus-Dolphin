@@ -111,8 +111,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/FlowerGirlSmug/Project-Plus-Dolphin
-        tag: SG-PostBL9-v3.1.5 													#uncomment and update these two lines to build a specific commit
-        commit: 4e7694053dd73b72a19858862ef14ca8ab1a6b6b
+        tag: SG-PostBL9-v3.1.5-2 													#uncomment and update these two lines to build a specific commit
+        commit: 9c3e9c3f1349cda9a84fc5237754e719cb96f680
         
       # TODO: Add x-checker-data
       # Project Plus SD card
