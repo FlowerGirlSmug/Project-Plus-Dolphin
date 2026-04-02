@@ -9,7 +9,7 @@
 
 namespace Common
 {
-#define EMULATOR_NAME "RevyBuild P+"
+#define EMULATOR_NAME "RevyBuild P+ TESTESTESTESTESTES"
 
 #ifdef _DEBUG
 #define BUILD_TYPE_STR "Debug "
