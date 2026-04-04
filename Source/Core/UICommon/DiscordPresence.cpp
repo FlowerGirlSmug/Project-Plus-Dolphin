@@ -226,12 +226,12 @@ void UpdateDiscordPresence(int party_size, SecretType type, const std::string& s
   DiscordRichPresence discord_presence = {};
   if (game_artwork.empty())
   {
-    discord_presence.largeImageKey = "https://i.imgur.com/BH2V3X9.png";
+    discord_presence.largeImageKey = "https://i.imgur.com/nl9eyt5.png";
     discord_presence.largeImageText = "Ontario Project+";
   }
   else if (SConfig::GetInstance().GetGameID() == "RSBE01" || "ID-Project+ Netplay Launcher")
   {
-    discord_presence.largeImageKey = "https://i.imgur.com/BH2V3X9.png";
+    discord_presence.largeImageKey = "https://i.imgur.com/nl9eyt5.png";
     discord_presence.largeImageText = "Ontario Project+";
     discord_presence.smallImageKey = "dolphin_logo";
     discord_presence.smallImageText = "Dolphin is an emulator for the GameCube and the Wii.";
