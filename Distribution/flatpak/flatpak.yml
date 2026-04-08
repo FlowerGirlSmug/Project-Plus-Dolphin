@@ -1,5 +1,5 @@
 app-id: org.projectplusgame.project-plus-dolphin-ontario
-branch: master
+branch: Ontario
 runtime: org.kde.Platform
 runtime-version: 6.6
 sdk: org.kde.Sdk
@@ -110,7 +110,7 @@ modules:
       - /share/man
     sources:
       - type: git
-        url: FlowerGirlSmug/Project-Plus-Dolphin
+        url: https://github.com/FlowerGirlSmug/Project-Plus-Dolphin
         tag: ONPM-v3.1.5-05  													#uncomment and update these two lines to build a specific commit
         commit: a7780fd35c73f86af909a6ce84694be2670f5754
         
