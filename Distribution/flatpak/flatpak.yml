@@ -123,8 +123,8 @@ modules:
       # TODO: Add x-checker-data
       # Project Plus .dol files and icon
       - type: archive
-        url: https://github.com/jlambert360/FPM-AppImage/releases/download/v3.1.2/Launcher.tar.gz
-        sha256: 1b9dce2fb0eac3ad8cc809826b3b6bfd4ce30dbfc394eaa586e35dcd356fd189                  # This is the hash of the tar.gz file not the uncompressed
+        url: https://github.com/FlowerGirlSmug/MiscPPlusReleases/releases/download/Launch/ONPM_05.tar.gz
+        sha256: 4398b18be7d477b4216765127532fa8e38c64e6de5e4944752cb05a330e02442                  # This is the hash of the tar.gz file not the uncompressed
         dest: Launcher
 
       # TODO: Add x-checker-data
