@@ -21,6 +21,7 @@
 	</provides>
 	<releases>
 		<release version="3.1.5_03" date="2025-11-29"/>
+		<release version ="3.1.5_06" date="2026-04-28"/>
 	</releases>
 	<launchable type="desktop-id">org.projectplusgame.project-plus-dolphin-ontario.desktop</launchable>
 </component>

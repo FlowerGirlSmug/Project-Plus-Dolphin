@@ -111,8 +111,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/FlowerGirlSmug/Project-Plus-Dolphin
-        tag: ONPM-v3.1.5-05  													#uncomment and update these two lines to build a specific commit
-        commit: 489afbb6836382c8ea2a34994aa9b186cb7d2e96
+        tag: ONPM-v3.1.5-06  													#uncomment and update these two lines to build a specific commit
+        commit: 52af88de83e64e215601ea490c8559944434406f
         
       # TODO: Add x-checker-data
       # Project Plus SD card
