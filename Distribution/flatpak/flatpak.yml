@@ -123,8 +123,8 @@ modules:
       # TODO: Add x-checker-data
       # Project Plus .dol files and icon
       - type: archive
-        url: https://github.com/FlowerGirlSmug/MiscPPlusReleases/releases/download/Misc/SG_Launcher.tar.gz
-        sha256: 4d66ca7202960575b98f3ed845d367635d67b05e225387d5a84ed4a1f4b78e8a                  # This is the hash of the tar.gz file not the uncompressed
+        url: https://github.com/FlowerGirlSmug/MiscPPlusReleases/releases/download/Launch/SGPM_Launcher.tar.gz
+        sha256: 830718447788082e9c7effc2d974da7f9b7b1fa5562b239ff87ceec954e53860                  # This is the hash of the tar.gz file not the uncompressed
         dest: Launcher
 
       # TODO: Add x-checker-data
