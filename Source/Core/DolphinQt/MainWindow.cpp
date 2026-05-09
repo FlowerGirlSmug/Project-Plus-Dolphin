@@ -1371,7 +1371,7 @@ static QJsonObject GetLatestREVRelease(const QJsonArray& releases)
   {
     QJsonObject release = value.toObject();
     QString tag = release.value(QStringLiteral("tag_name")).toString();
-    if (tag.startsWith(QStringLiteral ("REV")))
+    if (tag.startsWith(QStringLiteral ("RV")))
       return release;
   }
   return QJsonObject();  // none found
