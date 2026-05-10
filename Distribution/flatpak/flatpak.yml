@@ -1,11 +1,11 @@
-app-id: org.projectplusgame.project-plus-dolphin
-branch: master
+app-id: org.brawlbackmod.brawlback-dolphin
+branch: BrawlBack-DNU
 runtime: org.kde.Platform
 runtime-version: 6.6
 sdk: org.kde.Sdk
-command: project-plus-dolphin-wrapper.sh
-rename-desktop-file: project-plus-dolphin.desktop
-rename-icon: project-plus-dolphin
+command: brawlback-dolphin-wrapper.sh
+rename-desktop-file: brawlback-dolphin.desktop
+rename-icon: brawlback-dolphin
 finish-args:
   - --device=all # need for controllers
   # the file picker uses portals but the set
@@ -97,22 +97,22 @@ modules:
         url: https://github.com/Unrud/xdg-screensaver-shim/archive/0.0.2.tar.gz
         sha256: 0ed2a69fe6ee6cbffd2fe16f85116db737f17fb1e79bfb812d893cf15c728399
 
-  - name: project-plus-dolphin
+  - name: brawlback-dolphin
     buildsystem: cmake-ninja
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DENABLE_ALSA=OFF
       - -DENABLE_SDL=ON
       - -DENABLE_EVDEV=ON
-      - -DDISTRIBUTOR=Project Plus Development Team
-      - -DCPACK_PACKAGE_CONTACT=Project Plus Development Team
+      - -DDISTRIBUTOR=Brawlback-Team
+      - -DCPACK_PACKAGE_CONTACT=Brawlback-Team
     cleanup:
       - /share/man
     sources:
       - type: git
-        url: https://github.com/Project-Plus-Development-Team/Project-Plus-Dolphin
-        tag: v3.1.5-2601  													#uncomment and update these two lines to build a specific commit
-        commit: 965d0567a5f899faa28c4f4a49a83a34145a488c
+        url: https://github.com/FlowerGirlSmug/Project-Plus-Dolphin
+        # tag: v3.1.5-2601  													#uncomment and update these two lines to build a specific commit
+        # commit: 965d0567a5f899faa28c4f4a49a83a34145a488c
         
       # TODO: Add x-checker-data
       # Project Plus SD card
@@ -136,11 +136,11 @@ modules:
 
       # Script that is ran everytime the final Flatpak starts
       - type: file
-        path: project-plus-dolphin-wrapper.sh
+        path: brawlback-dolphin-wrapper.sh
         
       # Metadata file for Flatpak repos
       - type: file
-        path: org.projectplusgame.project-plus-dolphin.metainfo.xml
+        path: org.brawlbackmod.brawlback-dolphin.metainfo.xml
 
       # detects whether dolphin is running in a flatpak sandbox
       # and makes it use xdg directories if it is.
@@ -154,19 +154,19 @@ modules:
       #        test -S $XDG_RUNTIME_DIR/discord-ipc-$i ||
       #          ln -sf {app/com.discordapp.Discord,$XDG_RUNTIME_DIR}/discord-ipc-$i;
       #      done
-      #      project-plus-dolphin "$@"
-      #  dest-filename: project-plus-dolphin-wrapper
+      #      brawlback-dolphin "$@"
+      #  dest-filename: brawlback-dolphin-wrapper
     post-install:
       - |
-      - install -D -t ${FLATPAK_DEST}/bin/ project-plus-dolphin-wrapper.sh
-      - desktop-file-edit --set-key=Exec --set-value='/app/bin/project-plus-dolphin-wrapper.sh'
-        /app/share/applications/project-plus-dolphin.desktop
-      - desktop-file-edit --set-key=Name --set-value='Project Plus Dolphin'
-        /app/share/applications/project-plus-dolphin.desktop
-      - rm -r ${FLATPAK_DEST}/share/project-plus-dolphin/sys                                                                                       # Remove preinstalled sys directory
-      - mv Data/Sys ${FLATPAK_DEST}/share/project-plus-dolphin/sys/                                                                                # Move Sys directory to correct location (only use without the -DLINUX_LOCAL_DEV=true flag set
-      #- tar --transform="s|sd.raw|WiiSD.raw|" -xf sd.tar.gz -C ${FLATPAK_DEST}/share/project-plus-dolphin/user/Wii/                               # Extract, rename and move SD card to correct location
-      #- mv Launcher ${FLATPAK_DEST}/share/project-plus-dolphin/sys/Wii/                                                                            # Move Launcher directory to correct location
-      #- mkdir -p ${FLATPAK_DEST}/share/project-plus-dolphin/sys/Load/Textures                                                                      # Make directory for HD textures
-      #- mv "ModPack/Full Quality HD Textures" ${FLATPAK_DEST}/share/project-plus-dolphin/sys/Load/Textures/RSBE01/                              	  # Move HD Textures from ModPack to correct location
-      - install -Dm644 org.projectplusgame.project-plus-dolphin.metainfo.xml -t ${FLATPAK_DEST}/share/metainfo/                                    # Install metainfo file
+      - install -D -t ${FLATPAK_DEST}/bin/ brawlback-dolphin-wrapper.sh
+      - desktop-file-edit --set-key=Exec --set-value='/app/bin/brawlback-dolphin-wrapper.sh'
+        /app/share/applications/brawlback-dolphin.desktop
+      - desktop-file-edit --set-key=Name --set-value='Brawlback Dolphin'
+        /app/share/applications/brawlback-dolphin.desktop
+      - rm -r ${FLATPAK_DEST}/share/brawlback-dolphinn/sys                                                                                       # Remove preinstalled sys directory
+      - mv Data/Sys ${FLATPAK_DEST}/share/brawlback-dolphin/sys/                                                                                # Move Sys directory to correct location (only use without the -DLINUX_LOCAL_DEV=true flag set
+      #- tar --transform="s|sd.raw|WiiSD.raw|" -xf sd.tar.gz -C ${FLATPAK_DEST}/share/brawlback-dolphin/user/Wii/                               # Extract, rename and move SD card to correct location
+      #- mv Launcher ${FLATPAK_DEST}/share/brawlback-dolphin/sys/Wii/                                                                            # Move Launcher directory to correct location
+      #- mkdir -p ${FLATPAK_DEST}/share/brawlback-dolphin/sys/Load/Textures                                                                      # Make directory for HD textures
+      #- mv "ModPack/Full Quality HD Textures" ${FLATPAK_DEST}/share/brawlback-dolphin/sys/Load/Textures/RSBE01/                              	  # Move HD Textures from ModPack to correct location
+      - install -Dm644 org.brawlbackmod.brawlback-dolphin.metainfo.xml -t ${FLATPAK_DEST}/share/metainfo/                                    # Install metainfo file

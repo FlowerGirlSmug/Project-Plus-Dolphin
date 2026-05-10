@@ -14,7 +14,7 @@
 
 AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 {
-  setWindowTitle(tr("About Project+ Dolphin"));
+  setWindowTitle(tr("About Brawlback Dolphin"));
 
   QString branch_str = QString::fromStdString(Common::GetScmBranchStr());
   const int commits_ahead = Common::GetScmCommitsAheadMaster();
@@ -28,7 +28,7 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 
   const QString text =
       QStringLiteral(R"(
-<p style='font-size:34pt; font-weight:400;'>Project+ Dolphin</p>
+<p style='font-size:34pt; font-weight:400;'>Brawlback Dolphin</p>
 
 <p style='font-size:18pt;'>%VERSION_STRING%</p>
 
@@ -39,7 +39,7 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 </p>
 
 <p>
-Built on Dolphin 2512. %CHECK_FOR_UPDATES%: <a href='https://projectplusgame.com'>projectplusgame.com.</a>
+Built on Dolphin 2512. %CHECK_FOR_UPDATES%: <a href='https://discord.gg/dzYRN32k4D'>Brawlback Discord.</a>
 </p>
 
 <p>
@@ -51,9 +51,9 @@ Built on Dolphin 2512. %CHECK_FOR_UPDATES%: <a href='https://projectplusgame.com
 </p>
 
 <p>
-<a href='https://github.com/Project-Plus-Development-Team/Project-Plus-Dolphin/blob/master/COPYING'>License</a> |
-<a href='https://github.com/dolphin-emu/dolphin/graphs/contributors'>Dolphin Authors</a> |
-<a href='https://discord.gg/vdssRDg'>Setup Support</a>
+<a href='https://github.com/brawlback-team/Project-Plus-Dolphin/blob/master/COPYING'>License</a> |
+<a href='https://github.com/Brawlback-Team/Project-Plus-Dolphin/graphs/contributors'>Dolphin Authors</a> |
+<a href='https://discord.gg/dzYRN32k4D'>Setup Support</a>
 )")
           .replace(QStringLiteral("%VERSION_STRING%"),
                    QString::fromUtf8(Common::GetScmDescStr().c_str()))
