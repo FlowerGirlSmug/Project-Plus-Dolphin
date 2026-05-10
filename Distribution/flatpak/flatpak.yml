@@ -111,8 +111,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/FlowerGirlSmug/Project-Plus-Dolphin
-        # tag: v3.1.5  													#uncomment and update these two lines to build a specific commit
-        # commit: 3c8923fde894826fe2adcb7cb6f1279e4dabb28a
+        tag: RV_iminmyelement-v3.1.5  													#uncomment and update these two lines to build a specific commit
+        commit: cd61eecd6bf1b3a145c30d7c19a6f0c2a8feb087
         
       # TODO: Add x-checker-data
       # Project Plus SD card
@@ -123,8 +123,8 @@ modules:
       # TODO: Add x-checker-data
       # Project Plus .dol files and icon
       - type: archive
-        url: https://github.com/FlowerGirlSmug/MiscPPlusReleases/releases/download/Misc/Revy_Launcher.tar.gz
-        sha256: 17816540211c41a04e724ae36f4a5c9e0a00d8db5004d157af46fe4dd65dbe08                  # This is the hash of the tar.gz file not the uncompressed
+        url: https://github.com/FlowerGirlSmug/MiscPPlusReleases/releases/download/Launch/Revy_launcher.tar.gz
+        sha256: 5dbafea3714c94e0f3acc5ce7d1a50b2ac87fe59fd70985481d3a19c14aa68b5                  # This is the hash of the tar.gz file not the uncompressed
         dest: Launcher
 
       # TODO: Add x-checker-data
