@@ -163,7 +163,7 @@ modules:
         /app/share/applications/brawlback-dolphin.desktop
       - desktop-file-edit --set-key=Name --set-value='Brawlback Dolphin'
         /app/share/applications/brawlback-dolphin.desktop
-      - rm -r ${FLATPAK_DEST}/share/brawlback-dolphinn/sys                                                                                       # Remove preinstalled sys directory
+      - rm -r ${FLATPAK_DEST}/share/brawlback-dolphin/sys                                                                                       # Remove preinstalled sys directory
       - mv Data/Sys ${FLATPAK_DEST}/share/brawlback-dolphin/sys/                                                                                # Move Sys directory to correct location (only use without the -DLINUX_LOCAL_DEV=true flag set
       #- tar --transform="s|sd.raw|WiiSD.raw|" -xf sd.tar.gz -C ${FLATPAK_DEST}/share/brawlback-dolphin/user/Wii/                               # Extract, rename and move SD card to correct location
       #- mv Launcher ${FLATPAK_DEST}/share/brawlback-dolphin/sys/Wii/                                                                            # Move Launcher directory to correct location
