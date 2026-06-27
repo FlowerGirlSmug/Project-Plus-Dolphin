@@ -29,6 +29,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>IA32</EnableEnhancedInstructionSet>
       <AdditionalOptions>/Gw /Zc:checkGwOdr %(AdditionalOptions)</AdditionalOptions>
       <WholeProgramOptimization Condition="'$(DolphinRelease)'=='true'">true</WholeProgramOptimization>
     </ClCompile>
