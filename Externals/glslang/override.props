@@ -9,7 +9,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_STD_VECTOR_ALGORITHMS=0;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
       <ForcedIncludeFiles>$(MSBuildThisFileDirectory)disable_vectorized_algo.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>

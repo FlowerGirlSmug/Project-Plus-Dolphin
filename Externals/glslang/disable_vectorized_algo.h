@@ -1,1 +1,3 @@
+#ifndef _USE_STD_VECTOR_ALGORITHMS
 #define _USE_STD_VECTOR_ALGORITHMS 0
+#endif
