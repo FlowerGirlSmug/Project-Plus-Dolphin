@@ -11,6 +11,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PreprocessorDefinitions>_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
+      <ForcedIncludeFiles>$(MSBuildThisFileDirectory)disable_vectorized_algo.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <!--ClCompile Debug-->
     <ClCompile Condition="'$(Configuration)'=='Debug'">
@@ -29,7 +30,6 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <EnableEnhancedInstructionSet>IA32</EnableEnhancedInstructionSet>
       <AdditionalOptions>/Gw /Zc:checkGwOdr %(AdditionalOptions)</AdditionalOptions>
       <WholeProgramOptimization Condition="'$(DolphinRelease)'=='true'">true</WholeProgramOptimization>
     </ClCompile>
