@@ -111,8 +111,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/FlowerGirlSmug/Project-Plus-Dolphin
-        tag: SG-I_Agree_Surfboarding-P+v3.1.5													#uncomment and update these two lines to build a specific commit
-        commit: 1e80b384e985937017f8fe7817d1aef181969aa5
+        tag: SG-Post_I_Agree-P+v3.1.5													#uncomment and update these two lines to build a specific commit
+        commit: e789b42193b600bd373abc3a24bc074e155bc6a1
         
       # TODO: Add x-checker-data
       # Project Plus SD card
