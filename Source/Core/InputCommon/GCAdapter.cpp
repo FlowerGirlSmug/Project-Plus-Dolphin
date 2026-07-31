@@ -297,13 +297,13 @@ static void ReadThreadFunc()
     // Update poll rate measurement.
     if (++poll_rate_measurement_count == POLL_RATE_MEASUREMENT_SAMPLE_COUNT)
     {
-      const auto now = Clock::now();
+      const auto clock_now = Clock::now();
 
       const auto poll_rate =
-          POLL_RATE_MEASUREMENT_SAMPLE_COUNT / DT_s(now - poll_rate_measurement_start_time).count();
+          POLL_RATE_MEASUREMENT_SAMPLE_COUNT / DT_s(clock_now - poll_rate_measurement_start_time).count();
       s_adapter_poll_rate.store(poll_rate, std::memory_order_relaxed);
 
-      poll_rate_measurement_start_time = now;
+      poll_rate_measurement_start_time = clock_now;
       poll_rate_measurement_count = 0;
     }
   }
