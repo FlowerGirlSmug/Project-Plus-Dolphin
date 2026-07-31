@@ -112,7 +112,7 @@ modules:
       - type: git
         url: https://github.com/Project-Plus-Development-Team/Project-Plus-Dolphin
         tag: v3.2.0  													#uncomment and update these two lines to build a specific commit
-        commit: 1f8d9e30a1a2c74f7920eb2104e434ac6b24bae4
+        commit: 8a0d0efcbd7e6a310d98fee89cc0376b89f5d064
         
       # TODO: Add x-checker-data
       # Project Plus SD card
