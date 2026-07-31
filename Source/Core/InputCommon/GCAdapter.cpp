@@ -226,15 +226,14 @@ static void ReadThreadFunc()
     std::array<u8, CONTROLLER_INPUT_PAYLOAD_EXPECTED_SIZE> input_buffer;
 
     int payload_size = 0;
-    int transfer_return_code =
-        libusb_interrupt_transfer(s_handle, s_endpoint_in, input_buffer.data(),
-                                  int(input_buffer.size()), &payload_size, USB_TIMEOUT_MS);
 
     // P+ change: for poll rate display
     std::chrono::high_resolution_clock::time_point start =
         std::chrono::high_resolution_clock::now();
-    int error = libusb_interrupt_transfer(s_handle, s_endpoint_in, input_buffer.data(),
-                                          int(input_buffer.size()), &payload_size, USB_TIMEOUT_MS);
+    int transfer_return_code =
+        libusb_interrupt_transfer(s_handle, s_endpoint_in, input_buffer.data(),
+                                  int(input_buffer.size()), &payload_size, USB_TIMEOUT_MS);
+
     // P+ change: for poll rate display
     std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
 
