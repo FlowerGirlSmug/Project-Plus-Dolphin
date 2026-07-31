@@ -170,6 +170,7 @@ static std::atomic_bool s_is_adapter_wanted = false;
 static std::array<std::atomic_bool, SerialInterface::MAX_SI_CHANNELS> s_config_rumble_enabled{};
 
 static std::atomic<double> s_adapter_poll_rate{};
+static u64 s_consecutive_slow_transfers = 0;
 
 static void ReadThreadFunc()
 {
@@ -228,6 +229,27 @@ static void ReadThreadFunc()
     int transfer_return_code =
         libusb_interrupt_transfer(s_handle, s_endpoint_in, input_buffer.data(),
                                   int(input_buffer.size()), &payload_size, USB_TIMEOUT_MS);
+
+    // P+ change: for poll rate display
+    std::chrono::high_resolution_clock::time_point start =
+        std::chrono::high_resolution_clock::now();
+    int error = libusb_interrupt_transfer(s_handle, s_endpoint_in, input_buffer.data(),
+                                          int(input_buffer.size()), &payload_size, USB_TIMEOUT_MS);
+    // P+ change: for poll rate display
+    std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+
+    double elapsed_ms =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(now - start).count() / 1000000.0;
+
+    if (elapsed_ms > 15.0)
+    {
+      s_consecutive_slow_transfers++;
+    }
+    else
+    {
+      s_consecutive_slow_transfers = 0;
+    }
+
     if (transfer_return_code == LIBUSB_SUCCESS)
     {
       ProcessInputPayload(input_buffer.data(), payload_size);
@@ -1076,6 +1098,11 @@ bool IsDetected(const char** error_message)
 double GetCurrentPollRate()
 {
   return s_adapter_poll_rate.load(std::memory_order_relaxed);
+}
+
+bool IsReadingAtReducedRate()
+{
+  return s_consecutive_slow_transfers > 80;
 }
 
 }  // namespace GCAdapter
