@@ -103,6 +103,8 @@ public:
   void SetPreferredView(bool list);
   QString GetDefaultGame() const;
   void SetDefaultGame(const QString& path);
+  QString GetLauncherPath() const;
+  void SetLauncherPath(QString path);
   void RefreshGameList();
   void NotifyRefreshGameListStarted();
   void NotifyRefreshGameListComplete();

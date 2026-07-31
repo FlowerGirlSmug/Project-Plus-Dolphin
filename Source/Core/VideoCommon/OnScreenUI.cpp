@@ -333,8 +333,7 @@ void OnScreenUI::DrawDebugText()
   if (!profile_output.empty())
     ImGui::TextUnformatted(profile_output.c_str());
 
-  // P+ change: warn if adapter is being read at reduced rate
-  if (GCAdapter::IsReadingAtReducedRate() && Config::Get(Config::MAIN_SHOW_ADAPTER_WARNING))
+  if (Config::Get(Config::MAIN_SHOW_ADAPTER_WARNING))
   {
     ImGui::TextWrapped(
       "Your GameCube Controller Adapter is reading inputs at a reduced rate.\n"

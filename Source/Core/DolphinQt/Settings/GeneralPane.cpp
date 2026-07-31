@@ -340,8 +340,8 @@ void GeneralPane::OnSaveConfig()
 {
   Config::ConfigChangeCallbackGuard config_guard;
 
-  auto& settings = SConfig::GetInstance();
-  /* if (AutoUpdateChecker::SystemSupportsAutoUpdates())
+  /*auto& settings = SConfig::GetInstance();
+   if (AutoUpdateChecker::SystemSupportsAutoUpdates())
   {
     Settings::Instance().SetAutoUpdateTrack(
         UpdateTrackFromIndex(m_combobox_update_track->currentIndex()));

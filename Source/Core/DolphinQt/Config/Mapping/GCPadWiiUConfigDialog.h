@@ -26,12 +26,12 @@ private:
 
 private:
   void UpdateAdapterStatus();
-  void UpdatePollRate();
 
   int m_port;
 
   QVBoxLayout* m_layout;
   QLabel* m_status_label;
+  QTimer* m_poll_rate_timer;
   QLabel* m_poll_rate_label;
   QDialogButtonBox* m_button_box;
 
