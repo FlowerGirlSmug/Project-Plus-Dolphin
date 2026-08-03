@@ -7,7 +7,6 @@
 #include <array>
 #include <cstddef>
 #include <cstring>
-#include <fstream>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -15,6 +14,7 @@
 #include <thread>
 #include <tuple>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include <fmt/format.h>
@@ -31,7 +31,6 @@
 #include "Common/NandPaths.h"
 #include "Common/QoSSession.h"
 #include "Common/SFMLHelper.h"
-#include "Common/StringUtil.h"
 #include "Common/Timer.h"
 #include "Common/Version.h"
 
@@ -55,30 +54,25 @@
 #include "Core/HW/GCPad.h"
 #include "Core/HW/SI/SI.h"
 #include "Core/HW/SI/SI_Device.h"
+#include "Core/HW/SI/SI_DeviceAMBaseboard.h"
 #include "Core/HW/SI/SI_DeviceGCController.h"
 #include "Core/HW/Sram.h"
 #include "Core/HW/WiiSave.h"
 #include "Core/HW/WiiSaveStructs.h"
+#include "Core/HW/Wiimote.h"
 #include "Core/HW/WiimoteEmu/DesiredWiimoteState.h"
-#include "Core/HW/WiimoteEmu/WiimoteEmu.h"
-#include "Core/HW/WiimoteReal/WiimoteReal.h"
 #include "Core/IOS/FS/FileSystem.h"
 #include "Core/IOS/FS/HostBackend/FS.h"
-#include "Core/IOS/USB/Bluetooth/BTEmu.h"
 #include "Core/IOS/Uids.h"
 #include "Core/Movie.h"
 #include "Core/NetPlayCommon.h"
-#include "Core/PowerPC/PowerPC.h"
 #include "Core/SyncIdentifier.h"
 #include "Core/System.h"
 #include "DiscIO/Blob.h"
 
-#include "InputCommon/ControllerEmu/ControlGroup/Attachments.h"
 #include "InputCommon/GCAdapter.h"
-#include "InputCommon/InputConfig.h"
 #include "UICommon/GameFile.h"
 #include "VideoCommon/OnScreenDisplay.h"
-#include "VideoCommon/VideoConfig.h"
 
 namespace NetPlay
 {
@@ -131,8 +125,8 @@ NetPlayClient::~NetPlayClient()
 
 // called from ---GUI--- thread
 NetPlayClient::NetPlayClient(const std::string& address, const u16 port, NetPlayUI* dialog,
-                             const std::string& name, const NetTraversalConfig& traversal_config)
-    : m_dialog(dialog), m_player_name(name)
+                             std::string name, const NetTraversalConfig& traversal_config)
+    : m_dialog(dialog), m_player_name(std::move(name))
 {
   ClearBuffers();
 
@@ -722,16 +716,17 @@ void NetPlayClient::OnPadData(sf::Packet& packet)
 
     GCPadStatus pad;
     packet >> pad.button;
-    if (!m_gba_config.at(map).enabled)
+    if (static_cast<size_t>(map) < m_gba_config.size() && !m_gba_config.at(map).enabled)
     {
       packet >> pad.analogA >> pad.analogB >> pad.stickX >> pad.stickY >> pad.substickX >>
           pad.substickY >> pad.triggerLeft >> pad.triggerRight >> pad.isConnected;
     }
 
-    // Trusting server for good map value (>=0 && <4)
-    // add to pad buffer
-    m_pad_buffer.at(map).Push(pad);
-    m_gc_pad_event.Set();
+    if (static_cast<size_t>(map) < m_pad_buffer.size())
+    {
+      m_pad_buffer.at(map).Push(pad);
+      m_gc_pad_event.Set();
+    }
   }
 }
 
@@ -744,20 +739,22 @@ void NetPlayClient::OnPadHostData(sf::Packet& packet)
 
     GCPadStatus pad;
     packet >> pad.button;
-    if (!m_gba_config.at(map).enabled)
+    if (static_cast<size_t>(map) < m_gba_config.size() && !m_gba_config.at(map).enabled)
     {
       packet >> pad.analogA >> pad.analogB >> pad.stickX >> pad.stickY >> pad.substickX >>
           pad.substickY >> pad.triggerLeft >> pad.triggerRight >> pad.isConnected;
     }
 
-    // Trusting server for good map value (>=0 && <4)
-    // write to last status
-    m_last_pad_status[map] = pad;
+    if (static_cast<size_t>(map) < m_last_pad_status.size())
+      m_last_pad_status[map] = pad;
 
-    if (!m_first_pad_status_received[map])
+    if (static_cast<size_t>(map) < m_first_pad_status_received.size())
     {
-      m_first_pad_status_received[map] = true;
-      m_first_pad_status_received_event.Set();
+      if (!m_first_pad_status_received[map])
+      {
+        m_first_pad_status_received[map] = true;
+        m_first_pad_status_received_event.Set();
+      }
     }
   }
 }
@@ -782,10 +779,11 @@ void NetPlayClient::OnWiimoteData(sf::Packet& packet)
       pad.length = 0;
     }
 
-    // Trusting server for good map value (>=0 && <4)
-    // add to pad buffer
-    m_wiimote_buffer.at(map).Push(pad);
-    m_wii_pad_event.Set();
+    if (static_cast<size_t>(map) < m_wiimote_buffer.size())
+    {
+      m_wiimote_buffer.at(map).Push(pad);
+      m_wii_pad_event.Set();
+    }
   }
 }
 
@@ -1265,7 +1263,7 @@ void NetPlayClient::OnSyncSaveDataWii(sf::Packet& packet)
     for (u8& byte : header.md5)
       packet >> byte;
     packet >> header.unk2;
-    for (size_t i = 0; i < header.banner_size; i++)
+    for (size_t i = 0; i < std::min<size_t>(header.banner_size, sizeof(header.banner)); i++)
       packet >> header.banner[i];
 
     // BkHeader
@@ -1943,6 +1941,8 @@ void NetPlayClient::UpdateDevices()
   auto& si = Core::System::GetInstance().GetSerialInterface();
   for (auto player_id : m_pad_map)
   {
+    const SerialInterface::SIDevices si_device = Config::Get(Config::GetInfoForSIDevice(local_pad));
+
     if (m_gba_config[pad].enabled && player_id > 0)
     {
       si.ChangeDevice(SerialInterface::SIDEVICE_GC_GBA_EMULATED, pad);
@@ -1950,8 +1950,6 @@ void NetPlayClient::UpdateDevices()
     else if (player_id == m_local_player->pid)
     {
       // Use local controller types for local controllers if they are compatible
-      const SerialInterface::SIDevices si_device =
-          Config::Get(Config::GetInfoForSIDevice(local_pad));
       if (SerialInterface::SIDevice_IsGCController(si_device))
       {
         si.ChangeDevice(si_device, pad);
@@ -1969,7 +1967,8 @@ void NetPlayClient::UpdateDevices()
     }
     else if (player_id > 0)
     {
-      si.ChangeDevice(SerialInterface::SIDEVICE_GC_CONTROLLER, pad);
+      if (si_device != SerialInterface::SIDEVICE_AM_BASEBOARD)
+        si.ChangeDevice(SerialInterface::SIDEVICE_GC_CONTROLLER, pad);
     }
     else
     {
@@ -2562,7 +2561,7 @@ void NetPlayClient::SendGameStatus()
     }
   }
 
-  packet << static_cast<u32>(result);
+  packet << result;
   Send(packet);
 }
 
@@ -2594,7 +2593,8 @@ bool NetPlayClient::DoAllPlayersHaveGame()
   });
 }
 
-static std::string SHA1Sum(const std::string& file_path, std::function<bool(int)> report_progress)
+static std::string SHA1Sum(const std::string& file_path,
+                           const std::function<bool(int)>& report_progress)
 {
   std::vector<u8> data(8 * 1024 * 1024);
   u64 read_offset = 0;
@@ -2896,12 +2896,12 @@ u64 ExpansionInterface::CEXIIPL::NetPlay_GetEmulatedTime()
 
 // called from ---CPU--- thread
 // return the local pad num that should rumble given a ingame pad num
-int SerialInterface::CSIDevice_GCController::NetPlay_InGamePadToLocalPad(int numPAD)
+int SerialInterface::CSIDevice_GCController::NetPlay_InGamePadToLocalPad(int pad_num)
 {
   std::lock_guard lk(NetPlay::crit_netplay_client);
 
   if (NetPlay::netplay_client)
-    return NetPlay::netplay_client->InGamePadToLocalPad(numPAD);
+    return NetPlay::netplay_client->InGamePadToLocalPad(pad_num);
 
-  return numPAD;
+  return pad_num;
 }
