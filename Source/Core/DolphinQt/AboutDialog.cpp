@@ -39,7 +39,7 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 </p>
 
 <p>
-Built on Dolphin 2512. %CHECK_FOR_UPDATES%: <a href='https://github.com/FlowerGirlSmug/Project-Plus-Dolphin/releases'>FlowerGirlSmug Github Repo.</a>
+Built on Dolphin 2606. %CHECK_FOR_UPDATES%: <a href='https://github.com/FlowerGirlSmug/Project-Plus-Dolphin/releases'>FlowerGirlSmug Github Repo.</a>
 </p>
 
 <p>

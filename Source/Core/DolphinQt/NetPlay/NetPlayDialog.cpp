@@ -23,11 +23,12 @@
 #include <QTextBrowser>
 
 #include <algorithm>
-#include <sstream>
+#include <utility>
 
+#ifdef HAS_LIBMGBA
 #include <fmt/ranges.h>
+#endif
 
-#include "Common/CommonPaths.h"
 #include "Common/Config/Config.h"
 #include "Common/HttpRequest.h"
 #include "Common/Logging/Log.h"
@@ -35,7 +36,6 @@
 
 #include "Core/Boot/Boot.h"
 #include "Core/Config/GraphicsSettings.h"
-#include "Core/Config/MainSettings.h"
 #include "Core/Config/NetplaySettings.h"
 #include "Core/ConfigManager.h"
 #include "Core/Core.h"
@@ -65,7 +65,6 @@
 
 #include "VideoCommon/NetPlayChatUI.h"
 #include "VideoCommon/NetPlayGolfUI.h"
-#include "VideoCommon/VideoConfig.h"
 
 bool copyCode;
 
@@ -548,7 +547,7 @@ void NetPlayDialog::reject()
 
 void NetPlayDialog::show(std::string nickname, bool use_traversal)
 {
-  m_nickname = nickname;
+  m_nickname = std::move(nickname);
   m_use_traversal = use_traversal;
   m_minimum_buffer_size = 0;
   m_player_buffer_size = 0;
@@ -1326,7 +1325,7 @@ void NetPlayDialog::AbortGameDigest()
 }
 
 void NetPlayDialog::ShowChunkedProgressDialog(const std::string& title, const u64 data_size,
-                                              const std::vector<int>& players)
+                                              std::span<const int> players)
 {
   QueueOnObject(this, [this, title, data_size, players] {
     if (m_chunked_progress_dialog->isVisible())

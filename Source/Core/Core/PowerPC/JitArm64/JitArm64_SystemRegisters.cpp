@@ -291,14 +291,6 @@ void JitArm64::mfsr(UGeckoInstruction inst)
   LDR(IndexType::Unsigned, gpr.R(inst.RD), PPC_REG, PPCSTATE_OFF_SR(inst.SR));
 }
 
-void JitArm64::mtsr(UGeckoInstruction inst)
-{
-  INSTRUCTION_START
-  JITDISABLE(bJITSystemRegistersOff);
-
-  STR(IndexType::Unsigned, gpr.R(inst.RS), PPC_REG, PPCSTATE_OFF_SR(inst.SR));
-}
-
 void JitArm64::mfsrin(UGeckoInstruction inst)
 {
   INSTRUCTION_START
@@ -315,24 +307,6 @@ void JitArm64::mfsrin(UGeckoInstruction inst)
   UBFM(index, RB, 28, 31);
   ADDI2R(addr, PPC_REG, PPCSTATE_OFF_SR(0), addr);
   LDR(RD, addr, ArithOption(EncodeRegTo64(index), true));
-}
-
-void JitArm64::mtsrin(UGeckoInstruction inst)
-{
-  INSTRUCTION_START
-  JITDISABLE(bJITSystemRegistersOff);
-
-  u32 b = inst.RB, d = inst.RD;
-  gpr.BindToRegister(d, d == b);
-
-  ARM64Reg RB = gpr.R(b);
-  ARM64Reg RD = gpr.R(d);
-  auto index = gpr.GetScopedReg();
-  auto addr = gpr.GetScopedReg();
-
-  UBFM(index, RB, 28, 31);
-  ADDI2R(EncodeRegTo64(addr), PPC_REG, PPCSTATE_OFF_SR(0), EncodeRegTo64(addr));
-  STR(RD, EncodeRegTo64(addr), ArithOption(EncodeRegTo64(index), true));
 }
 
 void JitArm64::twx(UGeckoInstruction inst)
@@ -353,7 +327,7 @@ void JitArm64::twx(UGeckoInstruction inst)
     CMP(gpr.R(a), gpr.R(inst.RB));
   }
 
-  constexpr std::array<CCFlags, 5> conditions{{CC_LT, CC_GT, CC_EQ, CC_VC, CC_VS}};
+  constexpr std::array<CCFlags, 5> conditions{{CC_HI, CC_LO, CC_EQ, CC_GT, CC_LT}};
   Common::SmallVector<FixupBranch, conditions.size()> fixups;
 
   for (size_t i = 0; i < conditions.size(); i++)
