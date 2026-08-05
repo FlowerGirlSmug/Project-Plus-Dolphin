@@ -112,7 +112,7 @@ modules:
       - type: git
         url: https://github.com/FlowerGirlSmug/Project-Plus-Dolphin
         tag: SG_P+_v3.1.5												#uncomment and update these two lines to build a specific commit
-        commit: be641185fb541d845af357e77373d3b5fa5207e7
+        commit: 0ada3ec2c9f61c0141de23d906fb0585401490e7
         
       # TODO: Add x-checker-data
       # Project Plus SD card
@@ -123,8 +123,8 @@ modules:
       # TODO: Add x-checker-data
       # Project Plus .dol files and icon
       - type: archive
-        url: https://github.com/FlowerGirlSmug/MiscPPlusReleases/releases/download/Launch/SGPM.Launcher.tar.gz
-        sha256: 2b32f93bff6b5f98a610ce23d2b39f3d2e8d7b14184001426e2ff9185fdc9042                  # This is the hash of the tar.gz file not the uncompressed
+        url: https://github.com/FlowerGirlSmug/MiscPPlusReleases/releases/download/Launch/SGPM_Launcher.tar.gz
+        sha256: 7ae42acf69fc4d85467abf265ea56762d13aa611a3f6403e150a230590b4fd40                  # This is the hash of the tar.gz file not the uncompressed
         dest: Launcher
 
       # TODO: Add x-checker-data
