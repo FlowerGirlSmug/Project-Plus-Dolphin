@@ -3,7 +3,7 @@ name: Project+ Dolphin Builder
 on:
   push:
     tags:
-      - 'v*'  # Triggers on tags starting with 'v' (e.g., v1.0)
+      - 'SG*'  # Triggers on tags starting with 'SG' (e.g., v1.0)
   pull_request:
     branches:
       - master
