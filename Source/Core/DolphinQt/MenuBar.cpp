@@ -677,10 +677,8 @@ void MenuBar::AddHelpMenu()
   help_menu->addSeparator();
 #endif
 
-  #ifdef SHOW_UPDATER
   QAction* updaterCheck = help_menu->addAction(tr("Check For &Updates"));
   connect(updaterCheck, &QAction::triggered, this, &MenuBar::ShowUpdateDialog);
-#endif  // SHOW_UPDATER
   help_menu->addAction(tr("&About"), this, &MenuBar::ShowAboutDialog);
 }
 
