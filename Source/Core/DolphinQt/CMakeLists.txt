@@ -480,14 +480,14 @@ PRIVATE
 )
 
 if(ENABLE_SDL)
-  target_link_libraries(project-plus-dolphin
+  target_link_libraries(project-plus-dolphin-sgpm
   PRIVATE
     SDL3::SDL3
   )
 endif()
 
 if (NEED_QT_GUI_PRIVATE_COMPONENT)
-  target_link_libraries(project-plus-dolphin
+  target_link_libraries(project-plus-dolphin-sgpm
   PRIVATE
     Qt6::GuiPrivate
   )
@@ -553,7 +553,7 @@ if(WIN32)
 
   if (ENABLE_AUTOUPDATE)
     # Copy build_info.txt
-    add_custom_command(TARGET project-plus-dolphin POST_BUILD
+    add_custom_command(TARGET project-plus-dolphin-sgpm POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/build_info.txt" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/build_info.txt"
     )
   endif()
