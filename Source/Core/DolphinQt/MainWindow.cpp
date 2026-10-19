@@ -20,14 +20,12 @@
 #include <QMessageBox>
 #include <QByteArray>
 #include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QJsonValue>
 
 #include <fmt/format.h>
 
 #include <future>
 #include <optional>
+#include <utility>
 #include <variant>
 
 #if defined(__unix__) || defined(__unix) || defined(__APPLE__)
@@ -55,7 +53,6 @@
 #include "Core/BootManager.h"
 #include "Core/CommonTitles.h"
 #include "Core/Config/AchievementSettings.h"
-#include "Core/Config/FreeLookSettings.h"
 #include "Core/Config/MainSettings.h"
 #include "Core/Config/NetplaySettings.h"
 #include "Core/Config/UISettings.h"
@@ -69,10 +66,8 @@
 #include "Core/HW/ProcessorInterface.h"
 #include "Core/HW/SI/SI_Device.h"
 #include "Core/HW/Wiimote.h"
-#include "Core/HW/WiimoteEmu/WiimoteEmu.h"
 #include "Core/HotkeyManager.h"
 #include "Core/IOS/USB/Bluetooth/BTEmu.h"
-#include "Core/IOS/USB/Bluetooth/WiimoteDevice.h"
 #include "Core/Movie.h"
 #include "Core/NetPlayClient.h"
 #include "Core/NetPlayProto.h"
@@ -108,6 +103,7 @@
 #include "DolphinQt/EmulatedUSB/WiiSpeakWindow.h"
 #include "DolphinQt/FIFO/FIFOPlayerWindow.h"
 #include "DolphinQt/GCMemcardManager.h"
+#include "DolphinQt/GameCount.h"
 #include "DolphinQt/GameList/GameList.h"
 #include "DolphinQt/Host.h"
 #include "DolphinQt/HotkeyScheduler.h"
@@ -140,19 +136,14 @@
 #include "DolphinQt/Updater.h"
 #include "DolphinQt/WiiUpdate.h"
 
-#include "InputCommon/ControllerInterface/ControllerInterface.h"
-#include "InputCommon/GCAdapter.h"
-
 #include "UICommon/DiscordPresence.h"
 #include "UICommon/GameFile.h"
 #include "UICommon/ResourcePack/Manager.h"
-#include "UICommon/ResourcePack/Manifest.h"
 #include "UICommon/ResourcePack/ResourcePack.h"
 
 #include "UICommon/UICommon.h"
 
 #include "VideoCommon/NetPlayChatUI.h"
-#include "VideoCommon/VideoConfig.h"
 
 #ifdef HAVE_XRANDR
 #include "UICommon/X11Utils.h"
@@ -221,7 +212,7 @@ static WindowSystemInfo GetWindowSystemInfo(QWindow* window)
   return wsi;
 }
 
-static std::vector<std::string> StringListToStdVector(QStringList list)
+static std::vector<std::string> StringListToStdVector(const QStringList& list)
 {
   std::vector<std::string> result;
   result.reserve(list.size());
@@ -279,8 +270,10 @@ MainWindow::MainWindow(Core::System& system, std::unique_ptr<BootParameters> boo
   InitCoreCallbacks();
 
   NetPlayInit();
-  
+
+#ifdef SHOW_UPDATER
   CheckForUpdatesAuto();
+#endif  // SHOW_UPDATER
 
 #ifdef USE_RETRO_ACHIEVEMENTS
   AchievementManager::GetInstance().Init(reinterpret_cast<void*>(winId()));
@@ -472,6 +465,7 @@ void MainWindow::CreateComponents()
   m_menu_bar = new MenuBar(this);
   m_tool_bar = new ToolBar(this);
   m_search_bar = new SearchBar(this);
+  m_game_count = new GameCount(this);
   m_game_list = new GameList(this);
   m_render_widget = new RenderWidget;
   m_stack = new QStackedWidget(this);
@@ -495,7 +489,7 @@ void MainWindow::CreateComponents()
   m_code_widget = new CodeWidget(this);
   m_assembler_widget = new AssemblerWidget(this);
 
-  const auto request_watch = [this](QString name, u32 addr) {
+  const auto request_watch = [this](const QString& name, u32 addr) {
     m_watch_widget->AddWatch(name, addr);
   };
   const auto request_breakpoint = [this](u32 addr) { m_breakpoint_widget->AddBP(addr); };
@@ -545,6 +539,8 @@ void MainWindow::ConnectMenuBar()
   connect(m_menu_bar, &MenuBar::EjectDisc, this, &MainWindow::EjectDisc);
   connect(m_menu_bar, &MenuBar::ChangeDisc, this, &MainWindow::ChangeDisc);
   connect(m_menu_bar, &MenuBar::OpenUserFolder, this, &MainWindow::OpenUserFolder);
+  connect(m_menu_bar, &MenuBar::OpenConfigFolder, this, &MainWindow::OpenConfigFolder);
+  connect(m_menu_bar, &MenuBar::OpenCacheFolder, this, &MainWindow::OpenCacheFolder);
 
   // Emulation
   connect(m_menu_bar, &MenuBar::Pause, this, &MainWindow::Pause);
@@ -618,7 +614,9 @@ void MainWindow::ConnectMenuBar()
           &GameList::OnGameListVisibilityChanged);
 
   connect(m_menu_bar, &MenuBar::ShowAboutDialog, this, &MainWindow::ShowAboutDialog);
+#ifdef SHOW_UPDATER
   connect(m_menu_bar, &MenuBar::ShowUpdateDialog, this, &MainWindow::ShowUpdateDialog);
+#endif  // SHOW_UPDATER
 
   connect(m_game_list, &GameList::SelectionChanged, m_menu_bar, &MenuBar::SelectionChanged);
   connect(this, &MainWindow::ReadOnlyModeChanged, m_menu_bar, &MenuBar::ReadOnlyModeChanged);
@@ -719,7 +717,9 @@ void MainWindow::ConnectToolBar()
   connect(m_tool_bar, &ToolBar::SettingsPressed, this, &MainWindow::ShowSettingsWindow);
   connect(m_tool_bar, &ToolBar::ControllersPressed, this, &MainWindow::ShowControllersWindow);
   connect(m_tool_bar, &ToolBar::GraphicsPressed, this, &MainWindow::ShowGraphicsWindow);
-  connect(m_tool_bar, &ToolBar::InstallUpdateManuallyPressed, this, &MainWindow::ShowUpdateDialog);  
+  #ifdef SHOW_UPDATER
+  connect(m_tool_bar, &ToolBar::InstallUpdateManuallyPressed, this, &MainWindow::ShowUpdateDialog);
+#endif  // SHOW_UPDATER
 
   connect(m_tool_bar, &ToolBar::StepPressed, m_code_widget, &CodeWidget::Step);
   connect(m_tool_bar, &ToolBar::StepOverPressed, m_code_widget, &CodeWidget::StepOver);
@@ -764,9 +764,30 @@ void MainWindow::ConnectStack()
 
   layout->addWidget(m_game_list);
   layout->addWidget(m_search_bar);
+  layout->addWidget(m_game_count);
+  layout->setSpacing(0);
   layout->setContentsMargins(0, 0, 0, 0);
 
   connect(m_search_bar, &SearchBar::Search, m_game_list, &GameList::SetSearchTerm);
+  connect(m_game_list, &GameList::GameCountUpdated, m_game_count, &GameCount::OnGameCountUpdated);
+
+  m_game_list->UpdateGameCount();
+
+  const auto update_spacing = [this](const bool game_count_is_visible) {
+    // The bottom margin of the search bar and the top margin of the game count are both suitable
+    // when the other widget is hidden, but when both are visible the gap created by the combination
+    // is too large. To fix this we set the bottom margin of the search bar to 0 when the game count
+    // is visible and set it to the top margin when the game count is hidden.
+    m_game_count->setVisible(game_count_is_visible);
+    auto* const search_layout = m_search_bar->layout();
+    QMargins search_margins = search_layout->contentsMargins();
+    const int new_bottom_margin = game_count_is_visible ? 0 : search_margins.top();
+    search_margins.setBottom(new_bottom_margin);
+    search_layout->setContentsMargins(search_margins);
+  };
+  update_spacing(Settings::Instance().IsGameCountVisible());
+
+  connect(&Settings::Instance(), &Settings::GameCountVisibilityChanged, update_spacing);
 
   m_stack->addWidget(widget);
 
@@ -842,6 +863,22 @@ void MainWindow::EjectDisc()
 void MainWindow::OpenUserFolder()
 {
   std::string path = File::GetUserPath(D_USER_IDX);
+
+  QUrl url = QUrl::fromLocalFile(QString::fromStdString(path));
+  QDesktopServices::openUrl(url);
+}
+
+void MainWindow::OpenConfigFolder()
+{
+  std::string path = File::GetUserPath(D_CONFIG_IDX);
+
+  QUrl url = QUrl::fromLocalFile(QString::fromStdString(path));
+  QDesktopServices::openUrl(url);
+}
+
+void MainWindow::OpenCacheFolder()
+{
+  std::string path = File::GetUserPath(D_CACHE_IDX);
 
   QUrl url = QUrl::fromLocalFile(QString::fromStdString(path));
   QDesktopServices::openUrl(url);
@@ -1161,6 +1198,32 @@ void MainWindow::StartGame(std::unique_ptr<BootParameters>&& parameters)
       if (!NKitWarningDialog::ShowUnlessDisabled())
         return;
     }
+
+    const auto volume_type =
+        std::get<BootParameters::Disc>(parameters->parameters).volume->GetVolumeType();
+    if (volume_type != DiscIO::Platform::Triforce)
+    {
+      const bool triforce_hardware_sp1 =
+          Config::Get(Config::MAIN_SERIAL_PORT_1) == ExpansionInterface::EXIDeviceType::Baseboard;
+      const bool triforce_hardware_port_1 = Config::Get(Config::GetInfoForSIDevice(0)) ==
+                                            SerialInterface::SIDevices::SIDEVICE_AM_BASEBOARD;
+
+      // Some Triforce tools don't include a boot.id file, but they can still be launched.
+      if (triforce_hardware_sp1)
+      {
+        ModalMessageBox::warning(this, tr("Warning"),
+                                 tr("Non-Triforce games cannot be booted with Triforce hardware "
+                                    "attached.\nPlease remove the Triforce Baseboard from SP1."),
+                                 QMessageBox::Ok);
+      }
+      if (triforce_hardware_port_1)
+      {
+        ModalMessageBox::warning(this, tr("Warning"),
+                                 tr("Non-Triforce games cannot be booted with Triforce hardware "
+                                    "attached.\nPlease remove the Triforce Baseboard from Port 1."),
+                                 QMessageBox::Ok);
+      }
+    }
   }
 
   // If we're running, only start a new game once we've stopped the last.
@@ -1299,6 +1362,12 @@ void MainWindow::ShowControllersWindow()
   m_settings_window->SelectPane(SettingsWindowPaneIndex::Controllers);
 }
 
+void MainWindow::ShowTriforceWindow()
+{
+  ShowSettingsWindow();
+  m_settings_window->SelectPane(SettingsWindowPaneIndex::Triforce);
+}
+
 void MainWindow::ShowFreeLookWindow()
 {
   if (!m_freelook_window)
@@ -1365,90 +1434,77 @@ void MainWindow::ShowAboutDialog()
 
 // P+ change: New updater; credit to RainbowTabitha and the Mario Party Netplay team for the base code!
 
-static QJsonObject GetLatestONPMRelease(const QJsonArray& releases)
-{
-  for (const QJsonValue& value : releases)
-  {
-    QJsonObject release = value.toObject();
-    QString tag = release.value(QStringLiteral("tag_name")).toString();
-    if (tag.startsWith(QStringLiteral ("ONPM")))
-      return release;
-  }
-  return QJsonObject();  // none found
-}
+#ifdef SHOW_UPDATER
 void MainWindow::ShowUpdateDialog()
 {
-  Common::HttpRequest httpRequest;
+    Common::HttpRequest httpRequest;
 
-  // Make the GET request
-  auto response = httpRequest.Get(
-      "https://api.github.com/repos/FlowerGirlSmug/Project-Plus-Dolphin/releases");
+    // Make the GET request
+    auto response = httpRequest.Get("https://api.github.com/repos/Project-Plus-Development-Team/Project-Plus-Dolphin/releases/latest");
 
-  if (!response)
-  {
-    QMessageBox::critical(this, tr("Error"), tr("Failed to fetch update information."));
-    return;
-  }
+    if (response)
+    {
+        // Access the underlying vector and convert it to QByteArray
+        QByteArray responseData(reinterpret_cast<const char*>(response->data()), response->size());
 
-  QByteArray responseData(reinterpret_cast<const char*>(response->data()), response->size());
-  QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData);
+        // Parse the JSON response
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData);
+        QJsonObject jsonObject = jsonDoc.object();
+      
+        QString currentVersion = QString::fromStdString(SCM_DESC_STR);
+        QString latestVersion = jsonObject.value(QStringLiteral("tag_name")).toString();
 
-  if (!jsonDoc.isArray())
-    return;
-
-  QJsonArray releases = jsonDoc.array();
-  QJsonObject latestONPM = GetLatestONPMRelease(releases);
-
-  if (latestONPM.isEmpty())
-  {
-    QMessageBox::information(this, tr("Info"), tr("No ONPM releases found."));
-    return;
-  }
-
-  QString currentVersion = QString::fromStdString(SCM_DESC_STR);
-  QString latestVersion = latestONPM.value(QStringLiteral("tag_name")).toString();
-
-  if (currentVersion != latestVersion)
-  {
-    bool forced = false;
-    UserInterface::Dialog::UpdateDialog updater(this, latestONPM, forced);
-    updater.exec();
-  }
-  else
-  {
-    QMessageBox::information(this, tr("Info"), tr("You are already up to date."));
-  }
+        if (currentVersion != latestVersion)
+        {
+          // Create and show the UpdateDialog with the fetched data
+          bool forced = false; // Set this based on your logic
+          UserInterface::Dialog::UpdateDialog updater(this, jsonObject, forced);
+          updater.exec();
+        } else {
+          QMessageBox::information(this, tr("Info"), tr("You are already up to date."));
+        }
+    }
+    else
+    {
+        // Handle error
+        QMessageBox::critical(this, tr("Error"), tr("Failed to fetch update information."));
+    }
 }
 
 void MainWindow::CheckForUpdatesAuto()
 {
-  Common::HttpRequest httpRequest;
-  auto response = httpRequest.Get(
-      "https://api.github.com/repos/FlowerGirlSmug/Project-Plus-Dolphin/releases");
+    Common::HttpRequest httpRequest;
 
-  if (!response)
-    return;
+    // Make the GET request
+    auto response = httpRequest.Get("https://api.github.com/repos/Project-Plus-Development-Team/Project-Plus-Dolphin/releases/latest");
 
-  QByteArray responseData(reinterpret_cast<const char*>(response->data()), response->size());
-  QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData);
+    if (response)
+    {
+        // Access the underlying vector and convert it to QByteArray
+        QByteArray responseData(reinterpret_cast<const char*>(response->data()), response->size());
 
-  if (!jsonDoc.isArray())
-    return;
+        // Parse the JSON response
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData);
+        QJsonObject jsonObject = jsonDoc.object();
+      
+        QString currentVersion = QString::fromStdString(SCM_DESC_STR);
+        QString latestVersion = jsonObject.value(QStringLiteral("tag_name")).toString();
 
-  QJsonObject latestONPM = GetLatestONPMRelease(jsonDoc.array());
-  if (latestONPM.isEmpty())
-    return;
-
-  QString currentVersion = QString::fromStdString(SCM_DESC_STR);
-  QString latestVersion = latestONPM.value(QStringLiteral("tag_name")).toString();
-
-  if (currentVersion != latestVersion)
-  {
-    bool forced = false;
-    UserInterface::Dialog::UpdateDialog updater(this, latestONPM, forced);
-    updater.exec();
-  }
+        if (currentVersion != latestVersion)
+        {
+          // Create and show the UpdateDialog with the fetched data
+          bool forced = false; // Set this based on your logic
+          UserInterface::Dialog::UpdateDialog updater(this, jsonObject, forced);
+          updater.exec();
+        }
+    }
+    else
+    {
+        // Handle error
+        QMessageBox::critical(this, tr("Error"), tr("Failed to fetch update information."));
+    }
 }
+#endif  // SHOW_UPDATER
 
 void MainWindow::ShowHotkeyDialog()
 {
@@ -1923,20 +1979,24 @@ void MainWindow::OnImportNANDBackup()
     return;
 
   ParallelProgressDialog dialog(this);
-  dialog.GetRaw()->setMinimum(0);
-  dialog.GetRaw()->setMaximum(0);
-  dialog.GetRaw()->setLabelText(tr("Importing NAND backup"));
-  dialog.GetRaw()->setCancelButton(nullptr);
-
-  auto beginning = QDateTime::currentDateTime().toMSecsSinceEpoch();
+  dialog.GetRaw()->setWindowTitle(tr("Importing NAND backup"));
 
   std::future<void> result = std::async(std::launch::async, [&] {
     DiscIO::NANDImporter().ImportNANDBin(
         file.toStdString(),
-        [&dialog, beginning] {
-          dialog.SetLabelText(
-              tr("Importing NAND backup\n Time elapsed: %1s")
-                  .arg((QDateTime::currentDateTime().toMSecsSinceEpoch() - beginning) / 1000));
+        [&dialog](DiscIO::NANDImporter::Step step, u32 cur, u32 max) {
+          switch (step)
+          {
+          case DiscIO::NANDImporter::Step::Loading:
+            dialog.SetLabelText(tr("Loading NAND..."));
+            break;
+          case DiscIO::NANDImporter::Step::Extracting:
+            dialog.SetLabelText(tr("Extracting NAND..."));
+            break;
+          }
+          dialog.SetValue(cur);
+          dialog.SetMaximum(max);
+          return dialog.WasCanceled();
         },
         [this] {
           std::optional<std::string> keys_file = RunOnObject(this, [this] {
