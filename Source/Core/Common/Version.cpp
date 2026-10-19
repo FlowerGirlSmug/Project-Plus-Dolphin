@@ -9,7 +9,7 @@
 
 namespace Common
 {
-#define EMULATOR_NAME "Project+ Dolphin"
+#define EMULATOR_NAME "Ontario Project+"
 
 #ifdef _DEBUG
 #define BUILD_TYPE_STR "Debug "
@@ -18,12 +18,6 @@ namespace Common
 #else
 #define BUILD_TYPE_STR ""
 #endif
-
-const std::string& GetEmulatorName()
-{
-  static const std::string emulator_name = EMULATOR_NAME;
-  return emulator_name;
-}
 
 const std::string& GetScmRevStr()
 {
@@ -88,7 +82,7 @@ const std::string& GetNetplayDolphinVer()
 int GetScmCommitsAheadMaster()
 {
   // Note this macro can be empty if the master branch does not exist.
-  return SCM_COMMITS_AHEAD_MASTER + 0;
+  return + 0;
 }
 
 }  // namespace Common

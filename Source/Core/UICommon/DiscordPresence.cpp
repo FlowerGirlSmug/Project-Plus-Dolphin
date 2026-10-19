@@ -9,13 +9,17 @@
 
 #ifdef USE_DISCORD_PRESENCE
 
+#include <algorithm>
 #include <ctime>
+#include <set>
 #include <string>
 
 #include <discord_rpc.h>
 #include <fmt/format.h>
 
 #include "Common/Hash.h"
+#include "Common/HttpRequest.h"
+#include "Common/StringUtil.h"
 
 #include "Core/AchievementManager.h"
 #include "Core/Config/AchievementSettings.h"
@@ -55,7 +59,7 @@ void HandleDiscordJoin(const char* join_secret)
   if (event_handler == nullptr)
     return;
 
-  if (Config::IsDefaultValue(Config::NETPLAY_NICKNAME))
+  if (Config::Get(Config::NETPLAY_NICKNAME) == Config::NETPLAY_NICKNAME.GetDefaultValue())
     Config::SetCurrent(Config::NETPLAY_NICKNAME, username);
 
   std::string secret(join_secret);
@@ -222,13 +226,13 @@ void UpdateDiscordPresence(int party_size, SecretType type, const std::string& s
   DiscordRichPresence discord_presence = {};
   if (game_artwork.empty())
   {
-    discord_presence.largeImageKey = "https://art.gametdb.com/wii/coverB/US/RSBEPL.png";
-    discord_presence.largeImageText = "Project+";
+    discord_presence.largeImageKey = "https://i.imgur.com/nl9eyt5.png";
+    discord_presence.largeImageText = "Ontario Project+";
   }
   else if (SConfig::GetInstance().GetGameID() == "RSBE01" || "ID-Project+ Netplay Launcher")
   {
-    discord_presence.largeImageKey = "https://art.gametdb.com/wii/coverB/US/RSBEPL.png";
-    discord_presence.largeImageText = "Project+";
+    discord_presence.largeImageKey = "https://i.imgur.com/nl9eyt5.png";
+    discord_presence.largeImageText = "Ontario Project+";
     discord_presence.smallImageKey = "dolphin_logo";
     discord_presence.smallImageText = "Dolphin is an emulator for the GameCube and the Wii.";
   }
@@ -243,7 +247,7 @@ void UpdateDiscordPresence(int party_size, SecretType type, const std::string& s
     discord_presence.details = "Not in-game";
   else if (SConfig::GetInstance().GetGameID() == "RSBE01" || "ID-Project+ Netplay Launcher")
   {
-    discord_presence.details = "Project+";
+    discord_presence.details = "Ontario Project+";
   }
   else
     discord_presence.details = title.c_str();
@@ -292,7 +296,7 @@ void UpdateDiscordPresence(int party_size, SecretType type, const std::string& s
   std::string secret_final;
   if (type != SecretType::Empty)
   {
-    // Declaring party_id or secret_final here will deallocate the variable before passing the
+    // Declearing party_id or secret_final here will deallocate the variable before passing the
     // values over to Discord_UpdatePresence.
 
     const size_t secret_length = secret.length();

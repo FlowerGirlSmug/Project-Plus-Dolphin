@@ -20,9 +20,9 @@
 #elif defined(__APPLE__)
 #define NORMAL_USER_DIR "Library/Application Support/Dolphin"
 #elif defined(ANDROID)
-#define NORMAL_USER_DIR "/sdcard/project-plus-dolphin"
+#define NORMAL_USER_DIR "/sdcard/project-plus-dolphin-ontario"
 #else
-#define NORMAL_USER_DIR "project-plus-dolphin"
+#define NORMAL_USER_DIR "project-plus-dolphin-ontario"
 #endif
 
 // The portable user directory
@@ -45,13 +45,11 @@
 #define USA_DIR "USA"
 #define JAP_DIR "JAP"
 #define JPN_DIR "JPN"
-#define DEV_DIR "DEV"
 
 // Subdirs in the User dir returned by GetUserPath(D_USER_IDX)
 #define GC_USER_DIR "GC"
 #define GBA_USER_DIR "GBA"
 #define WII_USER_DIR "Wii"
-#define TRI_USER_DIR "Triforce"
 #define CONFIG_DIR "Config"
 #define GAMESETTINGS_DIR "GameSettings"
 #define MAPS_DIR "Maps"
@@ -104,7 +102,7 @@
 #define SHADERCACHE_LEGACY_DIR "ShaderCache"
 
 // The theme directory used by default
-#define DEFAULT_THEME_DIR "Clean Emerald"
+#define DEFAULT_THEME_DIR "Clean Red"
 
 // Filenames
 // Files in the directory returned by GetUserPath(D_CONFIG_IDX)
@@ -166,7 +164,6 @@
 // Subdirs in Sys
 #define GC_SYS_DIR "GC"
 #define WII_SYS_DIR "Wii"
-#define TRI_SYS_DIR "Triforce"
 
 // Subdirs in Config
 #define GRAPHICSMOD_CONFIG_DIR "GraphicMods"

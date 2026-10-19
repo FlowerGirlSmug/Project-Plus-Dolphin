@@ -3,6 +3,8 @@
 
 #include "Core/Config/NetplaySettings.h"
 
+#include "Common/Config/Config.h"
+
 namespace Config
 {
 static constexpr u16 DEFAULT_LISTEN_PORT = 2626;
@@ -32,7 +34,7 @@ const Info<std::string> NETPLAY_ADDRESS{{System::Main, "NetPlay", "Address"}, "1
 const Info<u16> NETPLAY_CONNECT_PORT{{System::Main, "NetPlay", "ConnectPort"}, DEFAULT_LISTEN_PORT};
 const Info<u16> NETPLAY_LISTEN_PORT{{System::Main, "NetPlay", "ListenPort"}, DEFAULT_LISTEN_PORT};
 
-const Info<std::string> NETPLAY_NICKNAME{{System::Main, "NetPlay", "Nickname"}, "P+ Player"};
+const Info<std::string> NETPLAY_NICKNAME{{System::Main, "NetPlay", "Nickname"}, "AYO BLITZ"};
 const Info<bool> NETPLAY_USE_UPNP{{System::Main, "NetPlay", "UseUPNP"}, true};
 
 const Info<bool> NETPLAY_ENABLE_QOS{{System::Main, "NetPlay", "EnableQoS"}, true};

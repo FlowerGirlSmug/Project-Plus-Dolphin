@@ -1,12 +1,6 @@
 name: Project+ Dolphin Builder
 
-on:
-  push:
-    tags:
-      - 'v*'  # Triggers on tags starting with 'v' (e.g., v1.0)
-  pull_request:
-    branches:
-      - master
+on: [push, pull_request]
 
 jobs: 
   build_windows_x86_64:
@@ -14,31 +8,23 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v2
       with:
+        repository: FlowerGirlSmug/Project-Plus-Dolphin
+        ref: Ontario
         fetch-depth: 0
-        fetch-tags: true
     - name: Setup Submodules
       run: git config --global --add safe.directory . && git submodule update --init --recursive
-    - name: Set Version
-      shell: pwsh
-      run: |
-        git fetch --tags --force
-        if ($env:GITHUB_REF_TYPE -eq 'tag') {
-          $version = $env:GITHUB_REF_NAME
-        } else {
-          $describe = git describe --always --long --dirty
-          $version = [regex]::Replace($describe, '(-0)?-[^-]+((-dirty)?)$', '$2')
-        }
-        "DOLPHINVER=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-    - name: Configure CMake
-      run: cmake -S . -B build -A x64 "-DCMAKE_TOOLCHAIN_FILE=CMake/DolphinToolchain.cmake" -DARCH=x86_64
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+      with:
+        vs-version: '16.6.2'
     - name: Build
-      run: cmake --build build --config Release --parallel
+      run: msbuild "Source\dolphin-emu.sln" /verbosity:minimal /property:Configuration=Release /property:Platform=x64
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Project-Plus-Dolphin-Windows-${{ env.DOLPHINVER }}
+        name: Project-Plus-Dolphin-Ontario-Windows-${{ env.DOLPHINVER }}
         path: Binary/x64/
         
   build_macos:
@@ -55,11 +41,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          repository: Project-Plus-Development-Team/Project-Plus-Dolphin
-          ref: master
+          repository: FlowerGirlSmug/Project-Plus-Dolphin
+          ref: Ontario
           submodules: recursive
           fetch-depth: 0
-          fetch-tags: true
 
       - name: Install Packages
         env:
@@ -67,9 +52,9 @@ jobs:
           HOMEBREW_NO_ANALYTICS: 1
         run: |
           brew install gnu-sed
-          if ! brew install ccache ninja libspng; then
+          if ! brew install ccache ninja; then
             brew update
-            brew install ccache ninja libspng
+            brew install ccache ninja
           fi
 
       - name: Cache Dependencies
@@ -129,7 +114,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release
             -DUSE_BUNDLED_MOLTENVK=OFF
             -DMACOS_CODE_SIGNING=OFF
-            -DPOSTPROCESS_BUNDLE=ON
             -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
             -DCMAKE_C_COMPILER_LAUNCHER=ccache
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
@@ -164,7 +148,7 @@ jobs:
           ccache -p
           ccache -s
           ccache -z
-          ninja project-plus-dolphin
+          ninja project-plus-dolphin-ontario
           ccache -s
 
       #- name: Build Dolphin (arm64)
@@ -173,7 +157,7 @@ jobs:
       #    ccache -p
       #    ccache -s
       #    ccache -z
-      #    ninja project-plus-dolphin
+      #    ninja project-plus-dolphin-ontario
       #    ccache -s 
 
       - name: Prepare Build Artifacts
@@ -196,7 +180,7 @@ jobs:
           else
             SUFFIX="sha[$(git rev-parse --short HEAD)]"
           fi
-          APPNAME="Project-Plus-Dolphin-macOS-$SUFFIX"
+          APPNAME="Project-Plus-Dolphin-Ontario-macOS-$SUFFIX"
           mv build/Binaries/DolphinQt.app "$APPNAME.app"
           tar --options xz:compression-level=9 -cvJf "$APPNAME.tar.xz" "$APPNAME.app"
           echo "name=$APPNAME" >> "$GITHUB_OUTPUT"
@@ -214,43 +198,19 @@ jobs:
       image: bilelmoussaoui/flatpak-github-actions:gnome-nightly
       options: --privileged
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        fetch-tags: true
-    - name: Set Version
-      run: |
-        if [ "$GITHUB_REF_TYPE" = "tag" ]; then
-          VERSION="$GITHUB_REF_NAME"
-        elif command -v git >/dev/null 2>&1 && git rev-parse --git-dir >/dev/null 2>&1; then
-          git fetch --tags --force
-          DESCRIBE=$(git describe --always --long --dirty)
-          VERSION=$(echo "$DESCRIBE" | sed -E 's/(-0)?-[^-]+((-dirty)?)$/\2/')
-        else
-          VERSION="sha-${GITHUB_SHA:0:7}"
-        fi
-        echo "DOLPHINVER=$VERSION" >> $GITHUB_ENV
+    - uses: actions/checkout@v2
     - name: Purge .git for space reasons
-      run: rm -rf /home/runner/work/Project-Plus-Dolphin-src/.git && rm -rf /home/runner/actions-runner/cached/_diag/* && rm -rf /home/runner/actions-runner/_work/_temp/ && rm -rf /home/runner/actions-runner/_work/_tool/*
+      run: rm -rf /home/runner/work/Project-Plus-Dolphin-Ontario-src/.git && rm -rf /home/runner/actions-runner/cached/_diag/* && rm -rf /home/runner/actions-runner/_work/_temp/ && rm -rf /home/runner/actions-runner/_work/_tool/*
     - name: Setup Packages
       run: |
         flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo && \
         flatpak install org.kde.Sdk//5.15 org.kde.Platform//5.15 -y && \
         dnf install libusb1-devel cmake git gcc-c++ libXext-devel libgudev qt6-qtbase-devel systemd-devel openal-soft-devel libevdev-devel libao-devel SOIL-devel libXrandr-devel pulseaudio-libs-devel bluez-libs-devel p7zip SDL2-devel make automake gcc gcc-c++ kernel-devel -y
-    - name: Pin Flatpak manifest to workflow ref
-      run: |
-        sed -i '/^[[:space:]]*tag:[[:space:]]/d' Distribution/flatpak/flatpak.yml
-        sed -i '/^[[:space:]]*commit:[[:space:]]/d' Distribution/flatpak/flatpak.yml
-        sed -i "/^[[:space:]]*url:[[:space:]]*https:\/\/github.com\/Project-Plus-Development-Team\/Project-Plus-Dolphin$/a\\        commit: ${GITHUB_SHA}" Distribution/flatpak/flatpak.yml
-        if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
-          sed -i "/^[[:space:]]*url:[[:space:]]*https:\/\/github.com\/Project-Plus-Development-Team\/Project-Plus-Dolphin$/a\\        tag: ${GITHUB_REF_NAME}" Distribution/flatpak/flatpak.yml
-        fi
-        grep -n "^[[:space:]]*\(tag:\|commit:\)" Distribution/flatpak/flatpak.yml
     - name: Run Flatpak Builder
       uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
         manifest-path: Distribution/flatpak/flatpak.yml
-        bundle: Project-Plus-Dolphin-${{ env.DOLPHINVER }}.flatpak
+        bundle: Project-Plus-Dolphin-Ontario-${{ env.DOLPHINVER }}.flatpak
         
   build_appimage:
     name: AppImage Build
@@ -261,25 +221,13 @@ jobs:
     - name: Checkout Upstream Repo
       uses: actions/checkout@v4
       with:
-        repository: Project-Plus-Development-Team/Project-Plus-Dolphin
-        ref: master
+        repository: FlowerGirlSmug/Project-Plus-Dolphin
+        ref: Ontario
         fetch-depth: 0
-        fetch-tags: true
 
     - name: Checkout Submodules
       if: steps.cache-submodules.outputs.cache-hit != 'true'
       run: git submodule update --init --recursive -j $(getconf _NPROCESSORS_ONLN)
-
-    - name: Set Version
-      run: |
-        git fetch --tags --force
-        if [ "$GITHUB_REF_TYPE" = "tag" ]; then
-          VERSION="$GITHUB_REF_NAME"
-        else
-          DESCRIBE=$(git describe --always --long --dirty)
-          VERSION=$(echo "$DESCRIBE" | sed -E 's/(-0)?-[^-]+((-dirty)?)$/\2/')
-        fi
-        echo "DOLPHINVER=$VERSION" >> $GITHUB_ENV
 
     - name: Checkout AppImage Repo
       uses: actions/checkout@v4
@@ -315,7 +263,7 @@ jobs:
         libzip-dev libzstd-dev zlib1g-dev libasound2-dev libpulse-dev pulseaudio p7zip p7zip-full libsfml-dev libminiupnpc-dev libmbedtls-dev libpugixml-dev \
         libbz2-dev liblzo2-dev libxi-dev libavcodec-dev libudev-dev libusb-1.0-0-dev libevdev-dev libc6-dev libhidapi-dev libavformat-dev libavdevice-dev \
         libfmt-dev libwayland-dev libxrandr-dev libglu1-mesa-dev libcurl4-openssl-dev x11-utils zenity wget curl git gettext ccache make cmake ninja-build \
-        libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-icccm4 libxcb-image0-dev libxcb-cursor-dev libspng-dev
+        libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-icccm4 libxcb-image0-dev libxcb-cursor-dev 
     - name: Purge .git for space reasons
       run: rm -rf /home/runner/work/Project-Plus-Dolphin-src/.git
     - name: Update Patchelf
@@ -331,7 +279,7 @@ jobs:
         mkdir -p "$HOME/.ccache"
         mkdir build
         cd build
-        cmake .. -GNinja -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-13 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-13 -DCMAKE_PREFIX_PATH="${{github.workspace}}/qt/${{ env.yaqti }}/gcc_64/" -Ddatadir:PATH="share/project-plus-dolphin" -DBIN_INSTALL_DIR="install/usr/bin" -DCMAKE_INSTALL_PREFIX="install/usr" -DINC_INSTALL_DIR="install/usr/include" -DLIB_INSTALL_DIR="install/usr/lib" -DPKGCONFIG_INSTALL_DIR="install/usr/lib/pkgconfig" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_NOGUI=OFF
+        cmake .. -GNinja -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-13 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-13 -DCMAKE_PREFIX_PATH="${{github.workspace}}/qt/${{ env.yaqti }}/gcc_64/" -Ddatadir:PATH="share/project-plus-dolphin-ontario" -DBIN_INSTALL_DIR="install/usr/bin" -DCMAKE_INSTALL_PREFIX="install/usr" -DINC_INSTALL_DIR="install/usr/include" -DLIB_INSTALL_DIR="install/usr/lib" -DPKGCONFIG_INSTALL_DIR="install/usr/lib/pkgconfig" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_NOGUI=OFF
         ninja
     - name: Install Dolphin
       run: |
@@ -340,7 +288,7 @@ jobs:
     - name: Package Dolphin-Binary
       run: |
         mkdir -p $GITHUB_WORKSPACE/{artifacts,uploads}
-        cp -P build/install/usr/bin/project-plus-dolphin $GITHUB_WORKSPACE/artifacts
+        cp -P build/install/usr/bin/project-plus-dolphin-ontario $GITHUB_WORKSPACE/artifacts
     - name: Package Dolphin-AppImage
       env:
         QT_BASE_DIR: /qt/${{ env.yaqti }}/gcc_64
@@ -364,8 +312,8 @@ jobs:
         cd $GITHUB_WORKSPACE
         mkdir -p squashfs-root
         cp -a build/install/usr $GITHUB_WORKSPACE/squashfs-root/
-        cp Data/project-plus-dolphin.svg ./squashfs-root/project-plus-dolphin.svg
-        cp Data/project-plus-dolphin.desktop ./squashfs-root/project-plus-dolphin.desktop
+        cp Data/project-plus-dolphin-ontario.svg ./squashfs-root/project-plus-dolphin-ontario.svg
+        cp Data/project-plus-dolphin-ontario.desktop ./squashfs-root/project-plus-dolphin-ontario.desktop
         curl -sSfL https://github.com/AppImage/AppImageKit/releases/download/continuous/runtime-x86_64 -o ./squashfs-root/runtime
         curl -sSfL "https://github.com/RPCS3/AppImageKit-checkrt/releases/download/continuous2/AppRun-patched-x86_64" -o ./squashfs-root/AppRun-patched
         cp ci/Distribution/appimage/{AppRun,update.sh} ./squashfs-root/
@@ -375,8 +323,8 @@ jobs:
         chmod a+x ./squashfs-root/runtime
         chmod a+x ./squashfs-root/AppRun-patched
         chmod a+x ./squashfs-root/update.sh
-        export UPD_INFO="gh-releases-zsync|Project-Plus-Development-Team|Project-Plus-Dolphin|continuous|Project+_Dolphin-x86_64.AppImage.zsync"
-        /tmp/squashfs-root/AppRun --appdir="$GITHUB_WORKSPACE"/squashfs-root/ --plugin qt -d "$GITHUB_WORKSPACE"/squashfs-root/project-plus-dolphin.desktop -i "$GITHUB_WORKSPACE"/squashfs-root/project-plus-dolphin.svg \
+        export UPD_INFO="gh-releases-zsync|FlowerGirlSmug|Project-Plus-Dolphin|continuous|Project+_Dolphin-Ontario-x86_64.AppImage.zsync"
+        /tmp/squashfs-root/AppRun --appdir="$GITHUB_WORKSPACE"/squashfs-root/ --plugin qt -d "$GITHUB_WORKSPACE"/squashfs-root/project-plus-dolphin-ontario.desktop -i "$GITHUB_WORKSPACE"/squashfs-root/project-plus-dolphin-ontario.svg \
         --exclude-library=libglib* --output appimage
         ls . | grep *.AppImage
         mv $(ls . | grep *.AppImage) $GITHUB_WORKSPACE/artifacts
@@ -391,7 +339,7 @@ jobs:
     - name: Upload Static Build
       uses: actions/upload-artifact@v4
       with:
-        name: Project-Plus-Dolphin-AppImage-${{ env.DOLPHINVER }}
+        name: Project-Plus-Dolphin-Ontario-AppImage-${{ env.DOLPHINVER }}
         path: uploads/
       env:
         DEFAULT_BRANCH: git-actions
