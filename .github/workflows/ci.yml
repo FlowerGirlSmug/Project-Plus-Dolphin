@@ -8,19 +8,17 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: FlowerGirlSmug/Project-Plus-Dolphin
         ref: Ontario
         fetch-depth: 0
     - name: Setup Submodules
       run: git config --global --add safe.directory . && git submodule update --init --recursive
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2
-      with:
-        vs-version: '16.6.2'
+    - name: Configure CMake
+      run: cmake -S . -B build -A x64 "-DCMAKE_TOOLCHAIN_FILE=CMake/DolphinToolchain.cmake" -DARCH=x86_64
     - name: Build
-      run: msbuild "Source\dolphin-emu.sln" /verbosity:minimal /property:Configuration=Release /property:Platform=x64
+      run: cmake --build build --config Release --parallel
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -52,9 +50,9 @@ jobs:
           HOMEBREW_NO_ANALYTICS: 1
         run: |
           brew install gnu-sed
-          if ! brew install ccache ninja; then
+          if ! brew install ccache ninja libspng; then
             brew update
-            brew install ccache ninja
+            brew install ccache ninja libspng
           fi
 
       - name: Cache Dependencies
@@ -198,7 +196,9 @@ jobs:
       image: bilelmoussaoui/flatpak-github-actions:gnome-nightly
       options: --privileged
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Purge .git for space reasons
       run: rm -rf /home/runner/work/Project-Plus-Dolphin-Ontario-src/.git && rm -rf /home/runner/actions-runner/cached/_diag/* && rm -rf /home/runner/actions-runner/_work/_temp/ && rm -rf /home/runner/actions-runner/_work/_tool/*
     - name: Setup Packages
