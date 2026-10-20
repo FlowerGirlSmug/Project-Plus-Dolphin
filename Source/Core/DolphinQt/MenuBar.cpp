@@ -663,7 +663,7 @@ void MenuBar::AddHelpMenu()
 
   QAction* website = help_menu->addAction(tr("&Website"));
   connect(website, &QAction::triggered, this,
-          [] { QDesktopServices::openUrl(QUrl(QStringLiteral("https://discord.com/invite/QDzzs5h"))); });
+          [] { QDesktopServices::openUrl(QUrl(QStringLiteral("https://discord.com/invite/Cnf7SXbsJG"))); });
   QAction* documentation = help_menu->addAction(tr("P+ Dolphin Wiki"));
   connect(documentation, &QAction::triggered, this, [] {
     QDesktopServices::openUrl(QUrl(QStringLiteral("https://github.com/FlowerGirlSmug/Project-Plus-Dolphin/wiki")));

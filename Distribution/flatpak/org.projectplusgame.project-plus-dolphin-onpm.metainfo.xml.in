@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-	<id>org.projectplusgame.project-plus-dolphin-sgpm</id>
+	<id>org.projectplusgame.project-plus-dolphin-onpm</id>
 	<name>Project Plus Dolphin</name>
 	<summary>GameCube / Wii / Triforce Emulator for Project Plus</summary>
 	<metadata_license>CC-BY-SA-3.0</metadata_license>
@@ -16,11 +16,12 @@
     </p>
 	</description>
 	<provides>
-		<binary>project-plus-dolphin-sgpm</binary>
-		<id>org.projectplusgame.project-plus-dolphin-sgpm.desktop</id>
+		<binary>project-plus-dolphin-onpm</binary>
+		<id>org.projectplusgame.project-plus-dolphin-onpm.desktop</id>
 	</provides>
 	<releases>
-		<release version="SGPM" date="2026-02-03"/>
+		<release version="3.2.1" date="2026-10-19"/>
+		<release version="3.2.0" date="2026-8-5"/>
 		<release version="3.1.5" date="2025-10-12"/>
 		<release version="3.1.2" date="2025-05-02"/>
 		<release version="3.1.1" date="2025-05-02"/>
@@ -31,5 +32,5 @@
 		<release version="3.0" date="2024-06-24"/>
 		<release version="2.5.2" date="2024-06-15"/>
 	</releases>
-	<launchable type="desktop-id">org.projectplusgame.project-plus-dolphin-sgpm.desktop</launchable>
+	<launchable type="desktop-id">org.projectplusgame.project-plus-dolphin-onpm.desktop</launchable>
 </component>

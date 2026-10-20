@@ -1,11 +1,11 @@
-app-id: org.projectplusgame.project-plus-dolphin-sgpm
+app-id: org.projectplusgame.project-plus-dolphin-onpm
 branch: master
 runtime: org.kde.Platform
 runtime-version: 6.6
 sdk: org.kde.Sdk
-command: project-plus-dolphin-sgpm-wrapper.sh
-rename-desktop-file: project-plus-dolphin-sgpm.desktop
-rename-icon: project-plus-dolphin-sgpm
+command: project-plus-dolphin-onpm-wrapper.sh
+rename-desktop-file: project-plus-dolphin-onpm.desktop
+rename-icon: project-plus-dolphin-onpm
 finish-args:
   - --device=all # need for controllers
   # the file picker uses portals but the set
@@ -97,7 +97,7 @@ modules:
         url: https://github.com/Unrud/xdg-screensaver-shim/archive/0.0.2.tar.gz
         sha256: 0ed2a69fe6ee6cbffd2fe16f85116db737f17fb1e79bfb812d893cf15c728399
 
-  - name: project-plus-dolphin-sgpm
+  - name: project-plus-dolphin-onpm
     buildsystem: cmake-ninja
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
@@ -121,8 +121,8 @@ modules:
       # TODO: Add x-checker-data
       # Project Plus .dol files and icon
       - type: archive
-        url: https://github.com/FlowerGirlSmug/MiscPPlusReleases/releases/download/Launch/SGPM_Launchr.tar.gz
-        sha256: 48946b8fcd9d085ba8938e623e031e2aec60a9959254d91d385b019bc7feec25                  # This is the hash of the tar.gz file not the uncompressed
+        url: https://github.com/FlowerGirlSmug/MiscPPlusReleases/releases/download/Launch/OntarioLaunch.tar.gz
+        sha256: 2a6af255ed0ceb3bc24691554b4d559747123c76e86f3a00aa3d121b27b446b4                  # This is the hash of the tar.gz file not the uncompressed
         dest: Launcher
 
       # TODO: Add x-checker-data
@@ -134,11 +134,11 @@ modules:
 
       # Script that is ran everytime the final Flatpak starts
       - type: file
-        path: project-plus-dolphin-sgpm-wrapper.sh
+        path: project-plus-dolphin-onpm-wrapper.sh
         
       # Metadata file for Flatpak repos
       - type: file
-        path: org.projectplusgame.project-plus-dolphin-sgpm.metainfo.xml
+        path: org.projectplusgame.project-plus-dolphin-onpm.metainfo.xml
 
       # detects whether dolphin is running in a flatpak sandbox
       # and makes it use xdg directories if it is.
@@ -152,19 +152,19 @@ modules:
       #        test -S $XDG_RUNTIME_DIR/discord-ipc-$i ||
       #          ln -sf {app/com.discordapp.Discord,$XDG_RUNTIME_DIR}/discord-ipc-$i;
       #      done
-      #      project-plus-dolphin-sgpm "$@"
-      #  dest-filename: project-plus-dolphin-sgpm-wrapper
+      #      project-plus-dolphin-onpm "$@"
+      #  dest-filename: project-plus-dolphin-onpm-wrapper
     post-install:
       - |
-      - install -D -t ${FLATPAK_DEST}/bin/ project-plus-dolphin-sgpm-wrapper.sh
-      - desktop-file-edit --set-key=Exec --set-value='/app/bin/project-plus-dolphin-sgpm-wrapper.sh'
-        /app/share/applications/project-plus-dolphin-sgpm.desktop
+      - install -D -t ${FLATPAK_DEST}/bin/ project-plus-dolphin-onpm-wrapper.sh
+      - desktop-file-edit --set-key=Exec --set-value='/app/bin/project-plus-dolphin-onpm-wrapper.sh'
+        /app/share/applications/project-plus-dolphin-onpm.desktop
       - desktop-file-edit --set-key=Name --set-value='Project Plus Dolphin'
-        /app/share/applications/project-plus-dolphin-sgpm.desktop
-      - rm -r ${FLATPAK_DEST}/share/project-plus-dolphin-sgpm/sys                                                                                       # Remove preinstalled sys directory
-      - mv Data/Sys ${FLATPAK_DEST}/share/project-plus-dolphin-sgpm/sys/                                                                                # Move Sys directory to correct location (only use without the -DLINUX_LOCAL_DEV=true flag set
-      #- tar --transform="s|sd.raw|WiiSD.raw|" -xf sd.tar.gz -C ${FLATPAK_DEST}/share/project-plus-dolphin-sgpm/user/Wii/                               # Extract, rename and move SD card to correct location
-      #- mv Launcher ${FLATPAK_DEST}/share/project-plus-dolphin-sgpm/sys/Wii/                                                                            # Move Launcher directory to correct location
-      #- mkdir -p ${FLATPAK_DEST}/share/project-plus-dolphin-sgpm/sys/Load/Textures                                                                      # Make directory for HD textures
-      #- mv "ModPack/Full Quality HD Textures" ${FLATPAK_DEST}/share/project-plus-dolphin-sgpm/sys/Load/Textures/RSBE01/                              	  # Move HD Textures from ModPack to correct location
-      - install -Dm644 org.projectplusgame.project-plus-dolphin-sgpm.metainfo.xml -t ${FLATPAK_DEST}/share/metainfo/                                    # Install metainfo file
+        /app/share/applications/project-plus-dolphin-onpm.desktop
+      - rm -r ${FLATPAK_DEST}/share/project-plus-dolphin-onpm/sys                                                                                       # Remove preinstalled sys directory
+      - mv Data/Sys ${FLATPAK_DEST}/share/project-plus-dolphin-onpm/sys/                                                                                # Move Sys directory to correct location (only use without the -DLINUX_LOCAL_DEV=true flag set
+      #- tar --transform="s|sd.raw|WiiSD.raw|" -xf sd.tar.gz -C ${FLATPAK_DEST}/share/project-plus-dolphin-onpm/user/Wii/                               # Extract, rename and move SD card to correct location
+      #- mv Launcher ${FLATPAK_DEST}/share/project-plus-dolphin-onpm/sys/Wii/                                                                            # Move Launcher directory to correct location
+      #- mkdir -p ${FLATPAK_DEST}/share/project-plus-dolphin-onpm/sys/Load/Textures                                                                      # Make directory for HD textures
+      #- mv "ModPack/Full Quality HD Textures" ${FLATPAK_DEST}/share/project-plus-dolphin-onpm/sys/Load/Textures/RSBE01/                              	  # Move HD Textures from ModPack to correct location
+      - install -Dm644 org.projectplusgame.project-plus-dolphin-onpm.metainfo.xml -t ${FLATPAK_DEST}/share/metainfo/                                    # Install metainfo file

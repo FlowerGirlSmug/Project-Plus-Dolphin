@@ -71,5 +71,5 @@ if(APPLE)
 endif()
 
 if(LINUX)
-  configure_source_file("Distribution/flatpak/org.projectplusgame.project-plus-dolphin-sgpm.metainfo.xml")
+  configure_source_file("Distribution/flatpak/org.projectplusgame.project-plus-dolphin-onpm.metainfo.xml")
 endif()

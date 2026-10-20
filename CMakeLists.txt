@@ -15,7 +15,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0.0" CACHE STRING "")
 
 set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_CURRENT_SOURCE_DIR}/CMake/FlagsOverride.cmake")
 
-project(project-plus-dolphin-sgpm)
+project(project-plus-dolphin-onpm)
 
 if (CMAKE_VERSION VERSION_LESS "3.25" AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(LINUX TRUE)
@@ -164,7 +164,7 @@ include(RemoveCompileFlag)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set up paths
-set(datadir ${CMAKE_INSTALL_FULL_DATADIR}/project-plus-dolphin-sgpm CACHE PATH "datadir")
+set(datadir ${CMAKE_INSTALL_FULL_DATADIR}/project-plus-dolphin-onpm CACHE PATH "datadir")
 add_definitions(-DDATA_DIR="${datadir}/")
 
 if(CMAKE_SYSROOT)
@@ -833,21 +833,21 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|OpenBSD|Darwin")
 endif()
 if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|OpenBSD")
   # Install the application icon and menu item
-  install(FILES Data/project-plus-dolphin-sgpm.svg
+  install(FILES Data/project-plus-dolphin-onpm.svg
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps)
-  install(FILES Data/project-plus-dolphin-sgpm.png
+  install(FILES Data/project-plus-dolphin-onpm.png
 		  DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/256x256/apps)
-  install(FILES Data/project-plus-dolphin-sgpm.desktop
+  install(FILES Data/project-plus-dolphin-onpm.desktop
           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
   # Install manpages
-  install(FILES Data/project-plus-dolphin-sgpm.6
+  install(FILES Data/project-plus-dolphin-onpm.6
           DESTINATION ${CMAKE_INSTALL_MANDIR}/man6)
-  install(FILES Data/project-plus-dolphin-sgpm-nogui.6
+  install(FILES Data/project-plus-dolphin-onpm-nogui.6
           DESTINATION ${CMAKE_INSTALL_MANDIR}/man6)
 endif()
 
 # packaging information
-set(CPACK_PACKAGE_NAME "project-plus-dolphin-sgpm")
+set(CPACK_PACKAGE_NAME "project-plus-dolphin-onpm")
 set(CPACK_PACKAGE_VENDOR "Project Plus Development Team")
 set(CPACK_PACKAGE_VERSION_MAJOR ${DOLPHIN_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${DOLPHIN_VERSION_MINOR})

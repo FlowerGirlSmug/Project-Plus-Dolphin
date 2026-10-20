@@ -9,7 +9,7 @@
 
 namespace Common
 {
-#define EMULATOR_NAME "SG Dolphin"
+#define EMULATOR_NAME "ONPM Dolphin"
 
 #ifdef _DEBUG
 #define BUILD_TYPE_STR "Debug "

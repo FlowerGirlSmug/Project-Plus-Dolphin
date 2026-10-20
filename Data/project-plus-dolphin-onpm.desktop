@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
-Icon=project-plus-dolphin-sgpm
-Exec=project-plus-dolphin-sgpm
+Icon=project-plus-dolphin-onpm
+Exec=project-plus-dolphin-onpm
 Terminal=false
 Type=Application
 Categories=Game;Emulator;

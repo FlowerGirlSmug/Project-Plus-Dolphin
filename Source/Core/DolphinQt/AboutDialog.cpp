@@ -51,7 +51,7 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 </p>
 
 <p>
-Built on Dolphin 2609. %CHECK_FOR_UPDATES%: <a href='https://github.com/FlowerGirlSmug/Project-Plus-Dolphin/releases'>FlowerGirlSmug Github Repo.</a>
+Built on Dolphin 2609a. %CHECK_FOR_UPDATES%: <a href='https://github.com/FlowerGirlSmug/Project-Plus-Dolphin/releases'>FlowerGirlSmug Github Repo.</a>
 </p>
 
 <p>
@@ -65,7 +65,7 @@ Built on Dolphin 2609. %CHECK_FOR_UPDATES%: <a href='https://github.com/FlowerGi
 <p>
 <a href='https://github.com/Project-Plus-Development-Team/Project-Plus-Dolphin/blob/master/COPYING'>License</a> |
 <a href='https://github.com/dolphin-emu/dolphin/graphs/contributors'>Dolphin Authors</a> |
-<a href='https://discord.gg/vdssRDg'>Setup Support</a>
+<a href='https://discord.com/invite/Cnf7SXbsJG'>Setup Support</a>
 )")
           .replace(QStringLiteral("%VERSION_STRING%"),
                    QString::fromUtf8(Common::GetScmDescStr().c_str()))

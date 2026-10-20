@@ -88,9 +88,9 @@ void UpdateDialog::accept()
         QString downloadUrl(object.value(QStringLiteral("browser_download_url")).toString());
 
         #ifdef _WIN32
-        if (filenameBlob.contains(QStringLiteral("Windows.Update.SG")) || 
-            filenameBlob.contains(QStringLiteral("Windows.SG")) || 
-            filenameBlob.contains(QStringLiteral("win64.SG")))
+        if (filenameBlob.contains(QStringLiteral("Windows.Update.ONPM")) || 
+            filenameBlob.contains(QStringLiteral("Windows.ONPM")) || 
+            filenameBlob.contains(QStringLiteral("win64.ONPM")))
         {
             filenameToDownload = filenameBlob;
             urlToDownload = downloadUrl;
@@ -98,8 +98,8 @@ void UpdateDialog::accept()
         }
         #endif
         #ifdef __APPLE__
-        if (filenameBlob.contains(QStringLiteral("macOS.Update.SG")) || 
-            filenameBlob.contains(QStringLiteral("macOS.SG")))
+        if (filenameBlob.contains(QStringLiteral("macOS.Update.ONPM")) || 
+            filenameBlob.contains(QStringLiteral("macOS.ONPM")))
         {
             filenameToDownload = filenameBlob;
             urlToDownload = downloadUrl;
